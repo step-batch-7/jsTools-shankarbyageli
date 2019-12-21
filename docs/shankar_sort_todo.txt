@@ -1,23 +1,27 @@
-sort tool :
+sort tool : 
 
+Version - 1.0.0
 1. sort filename
 2. sort -n filename
 3. sort -r filename
 4. sort -f filename
 5. sort -o output filename
 
+Version - 1.1.0
 6. sort file1 file2 file3 ...
 7. sort -n file1 file2 file3 ...
 8. sort -r file1 file2 file3 ...
 9. sort -f file1 file2 file3 ...
 10. sort -o output file1 file2 file3 ...
 
+Version - 1.2.0
 11. sort
 11. sort -n
 12. sort -r
 13. sort -f
 14. sort -o output
 
+Version - 1.3.0
 15. sort -n -r filename
 16. sort -f -r filename
 17. sort -n -f filename

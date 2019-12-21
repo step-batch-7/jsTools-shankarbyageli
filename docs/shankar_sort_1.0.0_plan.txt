@@ -47,7 +47,7 @@ Individula tasks :
     name => loadContents
 
   [1.2.1]
-    Output => Array : sorted array based on options
+    Output => Array : sorted array based on options : sortedContent
     Input => Array : Array of content, Array : options
     name => sortContent
 
