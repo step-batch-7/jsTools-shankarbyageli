@@ -1,0 +1,42 @@
+sort tool :
+
+1. sort filename
+2. sort -n filename
+3. sort -r filename
+4. sort -f filename
+5. sort -o output filename
+
+6. sort file1 file2 file3 ...
+7. sort -n file1 file2 file3 ...
+8. sort -r file1 file2 file3 ...
+9. sort -f file1 file2 file3 ...
+10. sort -o output file1 file2 file3 ...
+
+11. sort
+11. sort -n
+12. sort -r
+13. sort -f
+14. sort -o output
+
+15. sort -n -r filename
+16. sort -f -r filename
+17. sort -n -f filename
+18. sort -n -r filename -o filename
+19. sort -n -f filename -o filename
+20. sort -f -r filename -o filename
+
+21. sort -n -r file1 file2 file3 ...
+22. sort -f -r file1 file2 file3 ...
+23. sort -n -f file1 file2 file3 ...
+24. sort -n -r file1 file2 file3 ... -o filename
+25. sort -n -f file1 file2 file3 ... -o filename
+26. sort -f -r file1 file2 file3 ... -o filename
+
+27. sort -n -r
+28. sort -f -r
+29. sort -n -f
+30. sort -n -r -o filename
+31. sort -n -f -o filename
+32. sort -f -r -o filename
+
+Any combination of options is valid (-n -r, -n -f, -r -f, -n -f -r) with -o option or without -o.

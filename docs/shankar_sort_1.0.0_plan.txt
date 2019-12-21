@@ -1,0 +1,72 @@
+sort.js 1.0.0:
+
+BlackBox of the App:
+  ['filename'] => sort.js => sorted lines of the file
+  example Input file contents : box
+                                girl
+                                apple
+                                cat
+                                dog
+  example output :  apple
+                    box
+                    cat 
+                    dog
+                    girl
+
+Individula tasks : 
+  [1.1] : the last step
+    a. Output => a. text(String) : sorted lines of text : sortedLines
+                  'apple\nbox\ncat\ndog\ngirl'
+                 b. if -o option is there write the output to file
+        Input => Array : array of lines of file : linesArray
+                ['apple','box','cat','dog','girl']
+        name => printSortedOutput
+
+    b. Error => sort : No such a File or directory
+
+    c. Error => sort : Is a directory
+
+    d. Error => sort : Invalid option --option
+        
+    e. Error => sort : Option requires an argument --o
+
+  [1.2.0]
+    for each file load the contents of the file in an fileContents array : loadContents
+    Output => a. Array : Array of all the file contents
+             b. if no file is specified then Array of stdin contents
+    Input => Array : files
+    name => getDataToSort
+    
+  [1.2.0.0] :
+    Output => a. text(String) : file contents : fileContents
+                'girl\nbox\napple\ncat\ndog'
+             b. if file is not present : Error : 1.1b
+             c. if file is a directory : Error : 1.1c
+    Input => String : filename : filename
+            'file1'
+    name => loadContents
+
+  [1.2.1]
+    Output => Array : sorted array based on options
+    Input => Array : Array of content, Array : options
+    name => sortContent
+
+  [1.2] :
+    Output => Array : Array of sorted data to : 1.1a
+            ['apple','box','cat','dog','girl']
+    Input => Object : {files, options, output}
+    name => performSorting
+
+  [1.3] :
+    Output => a. Object : {files:[], options:[], output}
+          Object : {
+            files : ['file1'],
+            options : [],
+            output : ""
+          }   
+          b. if any option is invalid : Error : 1.1c
+          c. if -o option don't have filename argument : Error : 1.1e
+
+    Input => Array : command line args : cmdArgs
+          ['file1']
+    name => parseUserArgs
