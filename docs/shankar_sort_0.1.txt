@@ -1,0 +1,21 @@
+sort.js => Version - 0.1:
+
+Tasks : 
+  Setting up the directory structure : ==> done <==
+      create src and test directory.
+      create sort.js file.
+      create src/sortLib.js and test/testSortLib.js
+
+  Setting up the test and run environment : 
+      install mocha, chai libraries.
+      create package.json - npm init
+      add test script to package.json for npm test
+      add start script to package.json for npm start
+
+  performSorting
+
+  loadFileContents
+
+  receiveStdin
+
+  parseUserArguments

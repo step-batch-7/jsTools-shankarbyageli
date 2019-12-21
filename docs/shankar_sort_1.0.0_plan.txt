@@ -13,7 +13,7 @@ BlackBox of the App:
                     dog
                     girl
 
-Individula tasks : 
+Individual tasks : 
   [1.1] : the last step
     a. Output => a. text(String) : sorted lines of text : sortedLines
                   'apple\nbox\ncat\ndog\ngirl'

@@ -1,0 +1,27 @@
+{
+  "name": "jsTools-shankarbyageli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "sort.js",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/step-batch-7/jsTools-shankarbyageli.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/step-batch-7/jsTools-shankarbyageli/issues"
+  },
+  "homepage": "https://github.com/step-batch-7/jsTools-shankarbyageli#readme",
+  "dependencies": {
+    "chai": "^4.2.0"
+  }
+}
