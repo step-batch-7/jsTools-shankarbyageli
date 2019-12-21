@@ -12,10 +12,10 @@ Tasks :
       add test script to package.json for npm test
       add start script to package.json for npm start
 
-  performSorting
+  performSorting 
 
   loadFileContents
 
   receiveStdin
 
-  parseUserArguments
+  parseUserArguments ==> done <==

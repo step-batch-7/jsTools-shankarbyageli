@@ -1,4 +1,6 @@
-exports.parseUserArgs = function(args) {
+const fs = require("fs");
+
+const parseUserArgs = function(args) {
   const parsedArgs = {
     filename: [],
     options: []
@@ -9,7 +11,7 @@ exports.parseUserArgs = function(args) {
       : parsedArgs.filename.push(argument);
   });
   if (isValidOptions(parsedArgs.options)) return parsedArgs;
-  throw new Error("Invalid option");
+  throw new Error("sort : Invalid option");
 };
 
 const isValidOptions = function(options) {
@@ -19,3 +21,10 @@ const isValidOptions = function(options) {
   });
   return isValid;
 };
+
+const loadFileContents = function(path, fileExists, reader) {
+  if (fileExists(path)) return reader(path);
+  throw new Error("sort : No such a file or directory");
+};
+
+module.exports = { parseUserArgs, loadFileContents };
