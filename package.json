@@ -8,7 +8,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "nyc mocha"
+    "test": "nyc mocha",
+    "start": "node sort.js"
   },
   "repository": {
     "type": "git",

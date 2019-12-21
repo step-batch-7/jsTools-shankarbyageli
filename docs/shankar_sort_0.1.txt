@@ -6,7 +6,7 @@ Tasks :
       create sort.js file.
       create src/sortLib.js and test/testSortLib.js
 
-  Setting up the test and run environment : 
+  Setting up the test and run environment :  ==> done <==
       install mocha, chai libraries.
       create package.json - npm init
       add test script to package.json for npm test
