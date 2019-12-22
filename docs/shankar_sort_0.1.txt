@@ -14,8 +14,8 @@ Tasks :
 
   performSorting 
 
-  loadFileContents
+  loadFileContents ==> done <==
 
-  receiveStdin
+  receiveStdin 
 
   parseUserArguments ==> done <==

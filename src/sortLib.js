@@ -1,7 +1,7 @@
-const fs = require("fs");
+let fs = require("fs");
 
-const parseUserArgs = function(args) {
-  const parsedArgs = {
+let parseUserArgs = function(args) {
+  let parsedArgs = {
     filename: [],
     options: []
   };
@@ -14,17 +14,33 @@ const parseUserArgs = function(args) {
   throw new Error("sort : Invalid option");
 };
 
-const isValidOptions = function(options) {
-  const validOptions = ["-n", "-r", "-f"];
-  const isValid = options.every(arg => {
+let isValidOptions = function(options) {
+  let validOptions = ["-n", "-r", "-f"];
+  let isValid = options.every(arg => {
     return validOptions.includes(arg);
   });
   return isValid;
 };
 
-const loadFileContents = function(path, fileExists, reader) {
+let loadFileContents = function(path, fileExists, reader) {
   if (fileExists(path)) return reader(path);
   throw new Error("sort : No such a file or directory");
 };
 
-module.exports = { parseUserArgs, loadFileContents };
+let sortContent = function(content, options) {
+  let sortedContent = [...content].sort();
+  if (options.includes("-f")) {
+    sortedContent = caseInsensitiveSort(content);
+  }
+  options.includes("-n") && sortedContent.sort((a, b) => a - b);
+  options.includes("-r") && sortedContent.reverse();
+  return sortedContent;
+};
+
+let caseInsensitiveSort = function(array) {
+  return [...array].sort((a, b) => {
+    return a.toUpperCase().localeCompare(b.toUpperCase());
+  });
+};
+
+module.exports = { parseUserArgs, loadFileContents, sortContent };
