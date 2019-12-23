@@ -21,8 +21,8 @@ const sortStdin = function(stdin, options, callback) {
     stdinData.push(data.toString());
   });
   stdin.on("end", () => {
-    const sortedOutput = sortContent(stdinData, options);
-    callback(sortedOutput.join(""));
+    const sortedOutput = sortContent(stdinData.join("").split("\n"), options);
+    callback(sortedOutput.join("\n"));
   });
 };
 
