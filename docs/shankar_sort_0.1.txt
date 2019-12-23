@@ -19,3 +19,19 @@ Tasks :
   receiveStdin 
 
   parseUserArguments ==> done <==
+
+Commands :
+1. node sort.js file
+2. node sort.js
+3. node sort.js -n file
+4. node sort.js -n
+5. node sort.js -r file
+6. node sort.js -r
+7. node sort.js -f file
+8. node sort.js -f
+9. node sort.js -n -r file
+10. node sort.js -n -r 
+11. node sort.js -n -f file
+12. node sort.js -n -f 
+13. node sort.js -f -r file
+14. node sort.js -f -r 
