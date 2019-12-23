@@ -4,7 +4,7 @@ const {
   parseUserArgs,
   loadFileContents,
   sortContent,
-  performSorting
+  performSort
 } = require("../src/sortLib");
 
 describe("#parseUserArgs", function() {
@@ -93,7 +93,7 @@ describe("#sortContent", function() {
   });
 });
 
-describe("#performSorting", function() {
+describe("#performSort", function() {
   const readFileSync = function(path) {
     assert.strictEqual(path, "file");
     return "hello\ngo\n";
@@ -103,21 +103,23 @@ describe("#performSorting", function() {
     return true;
   };
   it("should perform sorting based on given cmdArgs", function() {
-    const actual = performSorting(["", "", "file"], {
+    const actual = performSort(["", "", "file"], {
       existsSync,
       readFileSync
     });
-    const expected = { options: [], sorted: ["go", "hello"] };
+    const expected = { stream: "log", data: ["go", "hello"], options: [] };
     assert.deepStrictEqual(actual, expected);
   });
 
   it("should give error if options are invalid", function() {
-    const actual = performSorting(["", "", "-k", "file"], {
+    const actual = performSort(["", "", "-k", "file"], {
       existsSync,
       readFileSync
     });
     const expected = {
-      error: "sort : Invalid option"
+      stream: "error",
+      data: "sort : Invalid option",
+      options: undefined
     };
     assert.deepStrictEqual(actual, expected);
   });
@@ -127,12 +129,13 @@ describe("#performSorting", function() {
       assert.strictEqual(path, "file");
       return false;
     };
-    const actual = performSorting(["", "", "file"], {
+    const actual = performSort(["", "", "file"], {
       existsSync,
       readFileSync
     });
     const expected = {
-      error: "sort : No such a file or directory",
+      stream: "error",
+      data: "sort : No such a file or directory",
       options: []
     };
     assert.deepStrictEqual(actual, expected);

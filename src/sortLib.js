@@ -1,17 +1,18 @@
-const performSorting = function(args, fs) {
-  const sortResult = {};
+const performSort = function(args, fs) {
+  let options, files, stream, data;
   try {
-    const { files, options } = parseUserArgs(args.slice(2));
-    sortResult.options = options;
+    ({ files, options } = parseUserArgs(args.slice(2)));
     if (files.length != 0) {
       let content = loadFileContents(files[0], fs.existsSync, fs.readFileSync);
       content = content.split("\n").slice(0, -1);
-      sortResult.sorted = sortContent(content, options);
+      data = sortContent(content, options);
+      stream = "log";
     }
   } catch (error) {
-    sortResult.error = error.message;
+    stream = "error";
+    data = error.message;
   }
-  return sortResult;
+  return { stream, data, options };
 };
 
 const sortStdin = function(stdin, options, callback) {
@@ -80,19 +81,10 @@ const numericSort = function(array) {
   return array.concat(numArray);
 };
 
-const printSortResult = function(sortResult = {}) {
-  if (sortResult.error) {
-    console.error(sortResult.error);
-    return;
-  }
-  if (sortResult.sorted) console.log(sortResult.sorted.join("\n"));
-};
-
 module.exports = {
   parseUserArgs,
   loadFileContents,
   sortContent,
-  performSorting,
-  printSortResult,
+  performSort,
   sortStdin
 };

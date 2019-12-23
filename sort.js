@@ -1,13 +1,13 @@
 const fs = require("fs");
-const { performSorting, printSortResult, sortStdin } = require("./src/sortLib");
+const { performSort, sortStdin } = require("./src/sortLib");
 
 const main = function() {
-  const sortResult = performSorting(process.argv, fs);
-  if (sortResult.sorted || sortResult.error) {
-    printSortResult(sortResult);
+  const { stream, data, options } = performSort(process.argv, fs);
+  if (data) {
+    console[stream](data.join("\n"));
     return;
   }
-  sortStdin(process.stdin, sortResult.options, console.log);
+  sortStdin(process.stdin, options, console.log);
 };
 
 main();
