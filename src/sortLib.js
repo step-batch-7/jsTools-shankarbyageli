@@ -10,7 +10,7 @@ const performSort = function(args, fs) {
     }
   } catch (error) {
     stream = "error";
-    data = error.message;
+    data = [error.message];
   }
   return { stream, data, options };
 };

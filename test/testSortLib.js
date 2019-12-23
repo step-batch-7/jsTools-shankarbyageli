@@ -118,7 +118,7 @@ describe("#performSort", function() {
     });
     const expected = {
       stream: "error",
-      data: "sort : Invalid option",
+      data: ["sort : Invalid option"],
       options: undefined
     };
     assert.deepStrictEqual(actual, expected);
@@ -135,7 +135,7 @@ describe("#performSort", function() {
     });
     const expected = {
       stream: "error",
-      data: "sort : No such a file or directory",
+      data: ["sort : No such a file or directory"],
       options: []
     };
     assert.deepStrictEqual(actual, expected);
