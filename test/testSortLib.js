@@ -11,7 +11,7 @@ describe("#parseUserArgs", function() {
     const args = ["-n", "file"];
     const actual = parseUserArgs(args);
     const expected = {
-      filename: ["file"],
+      files: ["file"],
       options: ["-n"]
     };
     assert.deepStrictEqual(actual, expected);
@@ -65,7 +65,7 @@ describe("#sortContent", function() {
 
   it("should sort the given array in reverse order if -r option given", function() {
     const content = ["1", "34", "2", "0"];
-    const actual = sortContent(content, ["-n", "-r"]);
+    const actual = sortContent(content, ["-r"]);
     const expected = ["34", "2", "1", "0"];
     assert.deepStrictEqual(actual, expected);
   });
@@ -73,7 +73,21 @@ describe("#sortContent", function() {
   it("should do case-insensitive sort if -f option is specified", function() {
     const content = ["abc", "def", "Abc", "DEF"];
     const actual = sortContent(content, ["-f"]);
-    const expected = ["abc", "Abc", "def", "DEF"];
+    const expected = ["Abc", "abc", "DEF", "def"];
+    assert.deepStrictEqual(actual, expected);
+  });
+
+  it("should do numeric sort if -n option is specified", function() {
+    const content = ["45", "2", "1", "10"];
+    const actual = sortContent(content, ["-n"]);
+    const expected = ["1", "2", "10", "45"];
+    assert.deepStrictEqual(actual, expected);
+  });
+
+  it("should perform numeric and case insensitive sort for -n and -r options", function() {
+    const content = ["abc", "2", "Abc", "1"];
+    const actual = sortContent(content, ["-n", "-f"]);
+    const expected = ["Abc", "abc", "1", "2"];
     assert.deepStrictEqual(actual, expected);
   });
 });
