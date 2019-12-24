@@ -1,9 +1,9 @@
 const { parseUserArgs } = require("./parseInput");
 
 const performFileSort = function(args, helper) {
-  let options, files, streamName, textLines;
+  let streamName, textLines;
   try {
-    ({ files, options } = parseUserArgs(args.slice(2)));
+    let { files, options } = parseUserArgs(args.slice(2));
     helper.userOptions = options;
     if (files.length != 0) {
       let content = loadFileContents(
@@ -23,7 +23,7 @@ const performFileSort = function(args, helper) {
   return { streamName, textLines };
 };
 
-const sortStdin = function(stdin, options, callback) {
+const performStreamSort = function(stdin, options, callback) {
   const stdinData = [];
   stdin.on("data", data => {
     stdinData.push(data.toString());
@@ -82,5 +82,5 @@ module.exports = {
   loadFileContents,
   sortContent,
   performFileSort,
-  sortStdin
+  performStreamSort
 };

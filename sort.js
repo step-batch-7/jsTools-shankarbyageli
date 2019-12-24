@@ -1,5 +1,5 @@
 const fs = require("fs");
-const { performFileSort, sortStdin } = require("./src/sortLib");
+const { performFileSort, performStreamSort } = require("./src/sortLib");
 
 const main = function() {
   const helper = {
@@ -12,7 +12,7 @@ const main = function() {
     logger(textLines.join("\n"));
     return;
   }
-  sortStdin(process.stdin, helper.options, console.log);
+  performStreamSort(process.stdin, helper.options, console.log);
 };
 
 main();

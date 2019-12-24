@@ -5,7 +5,7 @@ const {
   loadFileContents,
   sortContent,
   performFileSort,
-  sortStdin
+  performStreamSort
 } = require("../src/sortLib");
 
 describe("#loadFileContents", function() {
@@ -153,14 +153,14 @@ describe("#performFileSort", function() {
   });
 });
 
-describe("#sortStdin", function() {
+describe("#performStreamSort", function() {
   it("should perform sorting on given data through given stream", function() {
     const inputStream = new eventEmitter();
     let sortedContent;
     const callback = function(input) {
       sortedContent = input;
     };
-    sortStdin(inputStream, [], callback);
+    performStreamSort(inputStream, [], callback);
     inputStream.emit("data", "b\n");
     inputStream.emit("data", "c\n");
     inputStream.emit("data", "a\n");
