@@ -1,9 +1,16 @@
-const performSort = function(args, fs) {
+const { parseUserArgs } = require("./parseInput");
+
+const performFileSort = function(args, helper) {
   let options, files, streamName, textLines;
   try {
     ({ files, options } = parseUserArgs(args.slice(2)));
+    helper.userOptions = options;
     if (files.length != 0) {
-      let content = loadFileContents(files[0], fs.existsSync, fs.readFileSync);
+      let content = loadFileContents(
+        files[0],
+        helper.fs.existsSync,
+        helper.fs.readFileSync
+      );
       content = content.split("\n");
       if (content[content.length - 1] === "") content = content.slice(0, -1);
       textLines = sortContent(content, options);
@@ -13,7 +20,7 @@ const performSort = function(args, fs) {
     streamName = "error";
     textLines = [error.message];
   }
-  return { streamName, textLines, options };
+  return { streamName, textLines };
 };
 
 const sortStdin = function(stdin, options, callback) {
@@ -29,30 +36,6 @@ const sortStdin = function(stdin, options, callback) {
     const sortedOutput = sortContent(content, options);
     return callback(sortedOutput.join("\n"));
   });
-};
-
-const parseUserArgs = function(args) {
-  let parsedArgs = {
-    files: [],
-    options: []
-  };
-  args.forEach(argument => {
-    argument[0] === "-"
-      ? parsedArgs.options.push(argument)
-      : parsedArgs.files.push(argument);
-  });
-  let [isValid, invalidOption] = isValidOptions(parsedArgs.options);
-  if (isValid) return parsedArgs;
-  throw new Error(`sort : invalid option -- ${invalidOption.slice(1)}`);
-};
-
-let isValidOptions = function(options) {
-  let validOptions = ["-n", "-r", "-f"];
-  const invalidOption = options.find(arg => {
-    return !validOptions.includes(arg);
-  });
-  if (invalidOption) return [false, invalidOption];
-  return [true];
 };
 
 let loadFileContents = function(path, fileExists, reader) {
@@ -98,6 +81,6 @@ module.exports = {
   parseUserArgs,
   loadFileContents,
   sortContent,
-  performSort,
+  performFileSort,
   sortStdin
 };

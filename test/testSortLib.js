@@ -1,32 +1,12 @@
-const event = require("events").EventEmitter;
+const eventEmitter = require("events").EventEmitter;
 
 const assert = require("chai").assert;
 const {
-  parseUserArgs,
   loadFileContents,
   sortContent,
-  performSort,
+  performFileSort,
   sortStdin
 } = require("../src/sortLib");
-
-describe("#parseUserArgs", function() {
-  it("should give a object of file and options for valid input", function() {
-    const args = ["-n", "-r"];
-    const actual = parseUserArgs(args);
-    const expected = {
-      files: [],
-      options: ["-n", "-r"]
-    };
-    assert.deepStrictEqual(actual, expected);
-  });
-
-  it("should give error if invalid options are given", function() {
-    const args = ["-k", "file"];
-    assert.throws(function() {
-      parseUserArgs(args);
-    }, Error);
-  });
-});
 
 describe("#loadFileContents", function() {
   it("should load the contents of given file if file exists", function() {
@@ -95,7 +75,7 @@ describe("#sortContent", function() {
   });
 });
 
-describe("#performSort", function() {
+describe("#performFileSort", function() {
   const readFileSync = function(path) {
     assert.strictEqual(path, "file");
     return "hello\ngo\n";
@@ -105,14 +85,13 @@ describe("#performSort", function() {
     return true;
   };
   it("should perform sorting based on given cmdArgs", function() {
-    const actual = performSort(["", "", "file"], {
-      existsSync,
-      readFileSync
+    const actual = performFileSort(["", "", "file"], {
+      fs: { existsSync, readFileSync },
+      userOptions: []
     });
     const expected = {
       streamName: "log",
-      textLines: ["go", "hello"],
-      options: []
+      textLines: ["go", "hello"]
     };
     assert.deepStrictEqual(actual, expected);
   });
@@ -122,27 +101,25 @@ describe("#performSort", function() {
       assert.strictEqual(path, "file");
       return "hello\ngo";
     };
-    const actual = performSort(["", "", "file"], {
-      existsSync,
-      readFileSync
+    const actual = performFileSort(["", "", "file"], {
+      fs: { existsSync, readFileSync },
+      userOptions: []
     });
     const expected = {
       streamName: "log",
-      textLines: ["go", "hello"],
-      options: []
+      textLines: ["go", "hello"]
     };
     assert.deepStrictEqual(actual, expected);
   });
 
   it("should give error if options are invalid", function() {
-    const actual = performSort(["", "", "-k", "file"], {
-      existsSync,
-      readFileSync
+    const actual = performFileSort(["", "", "-k", "file"], {
+      fs: { existsSync, readFileSync },
+      userOptions: []
     });
     const expected = {
       streamName: "error",
-      textLines: ["sort : invalid option -- k"],
-      options: undefined
+      textLines: ["sort : invalid option -- k"]
     };
     assert.deepStrictEqual(actual, expected);
   });
@@ -152,27 +129,25 @@ describe("#performSort", function() {
       assert.strictEqual(path, "file");
       return false;
     };
-    const actual = performSort(["", "", "file"], {
-      existsSync,
-      readFileSync
+    const actual = performFileSort(["", "", "file"], {
+      fs: { existsSync, readFileSync },
+      userOptions: []
     });
     const expected = {
       streamName: "error",
-      textLines: ["sort : No such a file or directory"],
-      options: []
+      textLines: ["sort : No such a file or directory"]
     };
     assert.deepStrictEqual(actual, expected);
   });
 
   it("should give just options if no filename is specified", function() {
-    const actual = performSort(["", "", "-n"], {
-      existsSync,
-      readFileSync
+    const actual = performFileSort(["", "", "-n"], {
+      fs: { existsSync, readFileSync },
+      userOptions: []
     });
     const expected = {
       streamName: undefined,
-      textLines: undefined,
-      options: ["-n"]
+      textLines: undefined
     };
     assert.deepStrictEqual(actual, expected);
   });
@@ -180,7 +155,7 @@ describe("#performSort", function() {
 
 describe("#sortStdin", function() {
   it("should perform sorting on given data through given stream", function() {
-    const inputStream = new event();
+    const inputStream = new eventEmitter();
     let sortedContent;
     const callback = function(input) {
       sortedContent = input;
