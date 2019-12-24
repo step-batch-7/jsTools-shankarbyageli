@@ -1,0 +1,6 @@
+(node sort.js ./appTest/sample.txt)
+abc
+aed
+cdf
+edr
+sed

@@ -4,7 +4,8 @@ const performSort = function(args, fs) {
     ({ files, options } = parseUserArgs(args.slice(2)));
     if (files.length != 0) {
       let content = loadFileContents(files[0], fs.existsSync, fs.readFileSync);
-      content = content.split("\n").slice(0, -1);
+      content = content.split("\n");
+      if (content[content.length - 1] == "") content = content.slice(0, -1);
       textLines = sortContent(content, options);
       streamName = "log";
     }

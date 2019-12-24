@@ -1,0 +1,6 @@
+(node sort.js -r -n ./appTest/sample_for_numbers.txt)
+12
+12
+12
+2
+1.2
