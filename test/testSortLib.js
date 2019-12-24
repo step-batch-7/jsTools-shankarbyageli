@@ -1,26 +1,28 @@
-const fs = require("fs");
+const event = require("events").EventEmitter;
+
 const assert = require("chai").assert;
 const {
   parseUserArgs,
   loadFileContents,
   sortContent,
-  performSort
+  performSort,
+  sortStdin
 } = require("../src/sortLib");
 
 describe("#parseUserArgs", function() {
   it("should give a object of file and options for valid input", function() {
-    const args = ["-n", "file"];
+    const args = ["-n", "-r"];
     const actual = parseUserArgs(args);
     const expected = {
-      files: ["file"],
-      options: ["-n"]
+      files: [],
+      options: ["-n", "-r"]
     };
     assert.deepStrictEqual(actual, expected);
   });
 
   it("should give error if invalid options are given", function() {
-    const args = ["-n", "-k", "file"];
-    assert.throw(function() {
+    const args = ["-k", "file"];
+    assert.throws(function() {
       parseUserArgs(args);
     }, Error);
   });
@@ -143,5 +145,34 @@ describe("#performSort", function() {
       options: []
     };
     assert.deepStrictEqual(actual, expected);
+  });
+
+  it("should give just options if no filename is specified", function() {
+    const actual = performSort(["", "", "-n"], {
+      existsSync,
+      readFileSync
+    });
+    const expected = {
+      streamName: undefined,
+      textLines: undefined,
+      options: ["-n"]
+    };
+    assert.deepStrictEqual(actual, expected);
+  });
+});
+
+describe("#sortStdin", function() {
+  it("should perform sorting on given data through given stream", function() {
+    const inputStream = new event();
+    let sortedContent;
+    const callback = function(input) {
+      sortedContent = input;
+    };
+    sortStdin(inputStream, [], callback);
+    inputStream.emit("data", "b\n");
+    inputStream.emit("data", "c\n");
+    inputStream.emit("data", "a\n");
+    inputStream.emit("end");
+    assert.strictEqual(sortedContent, "a\nb\nc");
   });
 });

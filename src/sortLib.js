@@ -26,7 +26,7 @@ const sortStdin = function(stdin, options, callback) {
       .split("\n")
       .slice(0, -1);
     const sortedOutput = sortContent(content, options);
-    callback(sortedOutput.join("\n"));
+    return callback(sortedOutput.join("\n"));
   });
 };
 
@@ -40,7 +40,9 @@ const parseUserArgs = function(args) {
       ? parsedArgs.options.push(argument)
       : parsedArgs.files.push(argument);
   });
-  if (isValidOptions(parsedArgs.options)) return parsedArgs;
+  let [isValid, invalidOption] = isValidOptions(parsedArgs.options);
+  if (isValid) return parsedArgs;
+  throw new Error(`sort : invalid option -- ${invalidOption.slice(1)}`);
 };
 
 let isValidOptions = function(options) {
@@ -48,9 +50,8 @@ let isValidOptions = function(options) {
   const invalidOption = options.find(arg => {
     return !validOptions.includes(arg);
   });
-  if (invalidOption)
-    throw new Error(`sort : invalid option -- ${invalidOption.slice(1)}`);
-  return true;
+  if (invalidOption) return [false, invalidOption];
+  return [true];
 };
 
 let loadFileContents = function(path, fileExists, reader) {
