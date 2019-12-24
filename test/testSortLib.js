@@ -117,6 +117,23 @@ describe("#performSort", function() {
     assert.deepStrictEqual(actual, expected);
   });
 
+  it("should perform sorting based on given cmdArgs when no EOF at end of file", function() {
+    const readFileSync = function(path) {
+      assert.strictEqual(path, "file");
+      return "hello\ngo";
+    };
+    const actual = performSort(["", "", "file"], {
+      existsSync,
+      readFileSync
+    });
+    const expected = {
+      streamName: "log",
+      textLines: ["go", "hello"],
+      options: []
+    };
+    assert.deepStrictEqual(actual, expected);
+  });
+
   it("should give error if options are invalid", function() {
     const actual = performSort(["", "", "-k", "file"], {
       existsSync,

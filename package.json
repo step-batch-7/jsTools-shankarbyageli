@@ -8,7 +8,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "nyc mocha",
+    "test": "nyc mocha; ./runAppTests.sh appTest/*.test",
     "start": "node sort.js"
   },
   "repository": {
