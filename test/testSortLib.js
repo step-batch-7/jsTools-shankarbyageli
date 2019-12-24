@@ -107,7 +107,11 @@ describe("#performSort", function() {
       existsSync,
       readFileSync
     });
-    const expected = { stream: "log", data: ["go", "hello"], options: [] };
+    const expected = {
+      streamName: "log",
+      textLines: ["go", "hello"],
+      options: []
+    };
     assert.deepStrictEqual(actual, expected);
   });
 
@@ -117,8 +121,8 @@ describe("#performSort", function() {
       readFileSync
     });
     const expected = {
-      stream: "error",
-      data: ["sort : Invalid option"],
+      streamName: "error",
+      textLines: ["sort : invalid option -- k"],
       options: undefined
     };
     assert.deepStrictEqual(actual, expected);
@@ -134,8 +138,8 @@ describe("#performSort", function() {
       readFileSync
     });
     const expected = {
-      stream: "error",
-      data: ["sort : No such a file or directory"],
+      streamName: "error",
+      textLines: ["sort : No such a file or directory"],
       options: []
     };
     assert.deepStrictEqual(actual, expected);

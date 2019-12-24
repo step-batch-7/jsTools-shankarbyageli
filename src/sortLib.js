@@ -1,18 +1,18 @@
 const performSort = function(args, fs) {
-  let options, files, stream, data;
+  let options, files, streamName, textLines;
   try {
     ({ files, options } = parseUserArgs(args.slice(2)));
     if (files.length != 0) {
       let content = loadFileContents(files[0], fs.existsSync, fs.readFileSync);
       content = content.split("\n").slice(0, -1);
-      data = sortContent(content, options);
-      stream = "log";
+      textLines = sortContent(content, options);
+      streamName = "log";
     }
   } catch (error) {
-    stream = "error";
-    data = [error.message];
+    streamName = "error";
+    textLines = [error.message];
   }
-  return { stream, data, options };
+  return { streamName, textLines, options };
 };
 
 const sortStdin = function(stdin, options, callback) {
@@ -21,7 +21,11 @@ const sortStdin = function(stdin, options, callback) {
     stdinData.push(data.toString());
   });
   stdin.on("end", () => {
-    const sortedOutput = sortContent(stdinData.join("").split("\n"), options);
+    const content = stdinData
+      .join("")
+      .split("\n")
+      .slice(0, -1);
+    const sortedOutput = sortContent(content, options);
     callback(sortedOutput.join("\n"));
   });
 };
@@ -37,14 +41,16 @@ const parseUserArgs = function(args) {
       : parsedArgs.files.push(argument);
   });
   if (isValidOptions(parsedArgs.options)) return parsedArgs;
-  throw new Error("sort : Invalid option");
 };
 
 let isValidOptions = function(options) {
   let validOptions = ["-n", "-r", "-f"];
-  return options.every(arg => {
-    return validOptions.includes(arg);
+  const invalidOption = options.find(arg => {
+    return !validOptions.includes(arg);
   });
+  if (invalidOption)
+    throw new Error(`sort : invalid option -- ${invalidOption.slice(1)}`);
+  return true;
 };
 
 let loadFileContents = function(path, fileExists, reader) {
@@ -66,15 +72,20 @@ let sortContent = function(content, options) {
 
 const caseInsensitiveSort = function(array) {
   return [...array].sort((a, b) => {
-    return a.toUpperCase().localeCompare(b.toUpperCase());
+    const aUpper = a.toUpperCase();
+    const bUpper = b.toUpperCase();
+    if (aUpper < bUpper) return -1;
+    if (aUpper > bUpper) return 1;
+    return 0;
   });
 };
 
 const numericSort = function(array) {
   array.sort((a, b) => a - b);
-  const index = array.indexOf(
-    array.find(item => !Number.isInteger(Number(item)))
-  );
+  const value = array.find(item => {
+    return !Number.isInteger(Number(item)) && item != "";
+  });
+  const index = array.indexOf(value);
   if (index === -1) return array;
   const numArray = array.slice(0, index);
   array.splice(0, index);

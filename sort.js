@@ -2,9 +2,10 @@ const fs = require("fs");
 const { performSort, sortStdin } = require("./src/sortLib");
 
 const main = function() {
-  const { stream, data, options } = performSort(process.argv, fs);
-  if (data) {
-    console[stream](data.join("\n"));
+  const { streamName, textLines, options } = performSort(process.argv, fs);
+  if (textLines) {
+    const logger = console[streamName];
+    logger(textLines.join("\n"));
     return;
   }
   sortStdin(process.stdin, options, console.log);
