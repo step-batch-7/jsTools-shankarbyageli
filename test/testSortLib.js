@@ -11,7 +11,7 @@ const {
 } = require("../src/sortLib");
 
 describe("#loadFileContents", function() {
-  it("should load the contents of given file if file exists", function() {
+  it("should load the textLines of given file if file exists", function() {
     const reader = function(path) {
       assert.strictEqual(path, "file");
       return "hello world";
@@ -42,36 +42,36 @@ describe("#loadFileContents", function() {
 
 describe("#sortTextLines", function() {
   it("should sort the given array according to options", function() {
-    const content = ["1", "34", "2", "0"];
-    const actual = sortTextLines(content, ["-n"]);
+    const textLines = ["1", "34", "2", "0"];
+    const actual = sortTextLines(textLines, ["-n"]);
     const expected = ["0", "1", "2", "34"];
     assert.deepStrictEqual(actual, expected);
   });
 
   it("should sort the given array in reverse order if -r option given", function() {
-    const content = ["1", "34", "2", "0"];
-    const actual = sortTextLines(content, ["-r"]);
+    const textLines = ["1", "34", "2", "0"];
+    const actual = sortTextLines(textLines, ["-r"]);
     const expected = ["34", "2", "1", "0"];
     assert.deepStrictEqual(actual, expected);
   });
 
   it("should do case-insensitive sort if -f option is specified", function() {
-    const content = ["abc", "def", "Abc", "DEF"];
-    const actual = sortTextLines(content, ["-f"]);
+    const textLines = ["abc", "def", "Abc", "DEF"];
+    const actual = sortTextLines(textLines, ["-f"]);
     const expected = ["Abc", "abc", "DEF", "def"];
     assert.deepStrictEqual(actual, expected);
   });
 
   it("should do numeric sort if -n option is specified", function() {
-    const content = ["45", "2", "1", "10"];
-    const actual = sortTextLines(content, ["-n"]);
+    const textLines = ["45", "2", "1", "10"];
+    const actual = sortTextLines(textLines, ["-n"]);
     const expected = ["1", "2", "10", "45"];
     assert.deepStrictEqual(actual, expected);
   });
 
   it("should perform numeric and case insensitive sort for -n and -r options", function() {
-    const content = ["abc", "2", "Abc", "1"];
-    const actual = sortTextLines(content, ["-n", "-f"]);
+    const textLines = ["abc", "2", "Abc", "1"];
+    const actual = sortTextLines(textLines, ["-n", "-f"]);
     const expected = ["Abc", "abc", "1", "2"];
     assert.deepStrictEqual(actual, expected);
   });
@@ -125,29 +125,29 @@ describe("#performFileSort", function() {
 describe("#performStreamSort", function() {
   it("should perform sorting on given data through given stream", function() {
     const inputStream = new eventEmitter();
-    let sortedContent;
+    let sortedLines;
     const callback = function(stream, input) {
-      sortedContent = input;
+      sortedLines = input;
     };
     performStreamSort(inputStream, [], callback);
     inputStream.emit("data", "b\n");
     inputStream.emit("data", "c\n");
     inputStream.emit("data", "a\n");
     inputStream.emit("end");
-    assert.deepStrictEqual(sortedContent, ["a", "b", "c"]);
+    assert.deepStrictEqual(sortedLines, ["a", "b", "c"]);
   });
 });
 
 describe("#logSortResult", function() {
   it("should log the given data on the given stream", function() {
-    let givenText;
+    let sortedText;
     const logger = {
       data: function(input) {
-        givenText = input;
+        sortedText = input;
       }
     };
     logSortResult.call(logger, "data", ["ok", "bye"]);
-    assert.strictEqual(givenText, "ok\nbye");
+    assert.strictEqual(sortedText, "ok\nbye");
   });
 });
 
@@ -186,9 +186,9 @@ describe("#performSort", function() {
       fs: { readFileSync, existsSync },
       inputStream: emitter
     };
-    let sortedContent;
+    let sortedLines;
     const logResult = function(stream, input) {
-      sortedContent = input;
+      sortedLines = input;
     };
     const userArgs = ["", "", "-n"];
     performSort(userArgs, helper, logResult);
@@ -196,6 +196,6 @@ describe("#performSort", function() {
     helper.inputStream.emit("data", "c\n");
     helper.inputStream.emit("data", "a\n");
     helper.inputStream.emit("end");
-    assert.deepStrictEqual(sortedContent, ["a", "b", "c"]);
+    assert.deepStrictEqual(sortedLines, ["a", "b", "c"]);
   });
 });

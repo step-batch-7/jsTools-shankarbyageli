@@ -15,19 +15,20 @@ const performSort = function(userArgs, utils, logResult) {
 };
 
 const performFileSort = function(files, options, fs) {
-  let content = loadFileContents(files[0], fs.existsSync, fs.readFileSync);
-  content = content.split("\n");
-  if (content[content.length - 1] === "") content = content.slice(0, -1);
-  return sortTextLines(content, options);
+  let fileContents = loadFileContents(files[0], fs.existsSync, fs.readFileSync);
+  fileContents = fileContents.split("\n");
+  if (fileContents[fileContents.length - 1] === "")
+    fileContents = fileContents.slice(0, -1);
+  return sortTextLines(fileContents, options);
 };
 
-const performStreamSort = function(stdin, options, callback) {
-  const stdinData = [];
-  stdin.on("data", data => {
-    stdinData.push(data.toString());
+const performStreamSort = function(inputStream, options, callback) {
+  const inputStreamLines = [];
+  inputStream.on("data", data => {
+    inputStreamLines.push(data.toString());
   });
-  stdin.on("end", () => {
-    const content = stdinData
+  inputStream.on("end", () => {
+    const content = inputStreamLines
       .join("")
       .split("\n")
       .slice(0, -1);
@@ -41,16 +42,16 @@ let loadFileContents = function(path, fileExists, reader) {
   throw new Error("sort : No such a file or directory");
 };
 
-let sortTextLines = function(content, options) {
-  let sortedContent = [...content].sort();
+let sortTextLines = function(textLines, options) {
+  let sortedLines = [...textLines].sort();
   if (options.includes("-f")) {
-    sortedContent = caseInsensitiveSort(sortedContent);
+    sortedLines = caseInsensitiveSort(sortedLines);
   }
   if (options.includes("-n")) {
-    sortedContent = numericSort(sortedContent);
+    sortedLines = numericSort(sortedLines);
   }
-  options.includes("-r") && sortedContent.reverse();
-  return sortedContent;
+  options.includes("-r") && sortedLines.reverse();
+  return sortedLines;
 };
 
 const caseInsensitiveSort = function(textLines) {
@@ -65,8 +66,8 @@ const caseInsensitiveSort = function(textLines) {
 
 const numericSort = function(textLines) {
   textLines.sort((a, b) => a - b);
-  const firstNonNumber = textLines.find(item => {
-    return !Number.isInteger(Number(item)) && item != "";
+  const firstNonNumber = textLines.find(text => {
+    return !Number.isInteger(Number(text)) && text != "";
   });
   const index = textLines.indexOf(firstNonNumber);
   if (index === -1) return textLines;
@@ -75,9 +76,9 @@ const numericSort = function(textLines) {
   return textLines.concat(numbers);
 };
 
-const logSortResult = function(streamName, text) {
+const logSortResult = function(streamName, textLines) {
   const logger = this[streamName];
-  logger(text.join("\n"));
+  logger(textLines.join("\n"));
 };
 
 module.exports = {
