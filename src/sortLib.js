@@ -72,20 +72,20 @@ let sortContent = function(content, options) {
 
 const caseInsensitiveSort = function(array) {
   return [...array].sort((a, b) => {
-    const aUpper = a.toUpperCase();
-    const bUpper = b.toUpperCase();
-    if (aUpper < bUpper) return -1;
-    if (aUpper > bUpper) return 1;
+    const upperCaseA = a.toUpperCase();
+    const upperCaseB = b.toUpperCase();
+    if (upperCaseA < upperCaseB) return -1;
+    if (upperCaseA > upperCaseB) return 1;
     return 0;
   });
 };
 
 const numericSort = function(array) {
   array.sort((a, b) => a - b);
-  const value = array.find(item => {
+  const firstNonNumber = array.find(item => {
     return !Number.isInteger(Number(item)) && item != "";
   });
-  const index = array.indexOf(value);
+  const index = array.indexOf(firstNonNumber);
   if (index === -1) return array;
   const numArray = array.slice(0, index);
   array.splice(0, index);
