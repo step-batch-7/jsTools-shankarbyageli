@@ -2,10 +2,12 @@ const eventEmitter = require("events").EventEmitter;
 
 const assert = require("chai").assert;
 const {
+  performSort,
   loadFileContents,
   sortContent,
   performFileSort,
-  performStreamSort
+  performStreamSort,
+  logSortResult
 } = require("../src/sortLib");
 
 describe("#loadFileContents", function() {
@@ -85,14 +87,11 @@ describe("#performFileSort", function() {
     return true;
   };
   it("should perform sorting based on given cmdArgs", function() {
-    const actual = performFileSort(["", "", "file"], {
-      fs: { existsSync, readFileSync },
-      userOptions: []
+    const actual = performFileSort(["file"], [], {
+      existsSync,
+      readFileSync
     });
-    const expected = {
-      streamName: "log",
-      textLines: ["go", "hello"]
-    };
+    const expected = ["go", "hello"];
     assert.deepStrictEqual(actual, expected);
   });
 
@@ -101,26 +100,11 @@ describe("#performFileSort", function() {
       assert.strictEqual(path, "file");
       return "hello\ngo";
     };
-    const actual = performFileSort(["", "", "file"], {
-      fs: { existsSync, readFileSync },
-      userOptions: []
+    const actual = performFileSort(["file"], [], {
+      existsSync,
+      readFileSync
     });
-    const expected = {
-      streamName: "log",
-      textLines: ["go", "hello"]
-    };
-    assert.deepStrictEqual(actual, expected);
-  });
-
-  it("should give error if options are invalid", function() {
-    const actual = performFileSort(["", "", "-k", "file"], {
-      fs: { existsSync, readFileSync },
-      userOptions: []
-    });
-    const expected = {
-      streamName: "error",
-      textLines: ["sort : invalid option -- k"]
-    };
+    const expected = ["go", "hello"];
     assert.deepStrictEqual(actual, expected);
   });
 
@@ -129,27 +113,12 @@ describe("#performFileSort", function() {
       assert.strictEqual(path, "file");
       return false;
     };
-    const actual = performFileSort(["", "", "file"], {
-      fs: { existsSync, readFileSync },
-      userOptions: []
-    });
-    const expected = {
-      streamName: "error",
-      textLines: ["sort : No such a file or directory"]
-    };
-    assert.deepStrictEqual(actual, expected);
-  });
-
-  it("should give just options if no filename is specified", function() {
-    const actual = performFileSort(["", "", "-n"], {
-      fs: { existsSync, readFileSync },
-      userOptions: []
-    });
-    const expected = {
-      streamName: undefined,
-      textLines: undefined
-    };
-    assert.deepStrictEqual(actual, expected);
+    assert.throws(() => {
+      performFileSort(["file"], [], {
+        existsSync,
+        readFileSync
+      });
+    }, Error);
   });
 });
 
@@ -157,7 +126,7 @@ describe("#performStreamSort", function() {
   it("should perform sorting on given data through given stream", function() {
     const inputStream = new eventEmitter();
     let sortedContent;
-    const callback = function(input) {
+    const callback = function(stream, input) {
       sortedContent = input;
     };
     performStreamSort(inputStream, [], callback);
@@ -165,6 +134,19 @@ describe("#performStreamSort", function() {
     inputStream.emit("data", "c\n");
     inputStream.emit("data", "a\n");
     inputStream.emit("end");
-    assert.strictEqual(sortedContent, "a\nb\nc");
+    assert.deepStrictEqual(sortedContent, ["a", "b", "c"]);
+  });
+});
+
+describe("#logSortResult", function() {
+  it("should log the given data on the given stream", function() {
+    let givenText;
+    const logger = {
+      data: function(input) {
+        givenText = input;
+      }
+    };
+    logSortResult.call(logger, "data", ["ok", "bye"]);
+    assert.strictEqual(givenText, "ok\nbye");
   });
 });

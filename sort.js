@@ -1,18 +1,13 @@
 const fs = require("fs");
-const { performFileSort, performStreamSort } = require("./src/sortLib");
+const { performSort, logSortResult } = require("./src/sortLib");
 
 const main = function() {
   const helper = {
     fs,
-    userOptions: []
+    inputStream: process.stdin,
+    logger: console
   };
-  const { streamName, textLines } = performFileSort(process.argv, helper);
-  if (textLines) {
-    const logger = console[streamName];
-    logger(textLines.join("\n"));
-    return;
-  }
-  performStreamSort(process.stdin, helper.options, console.log);
+  performSort(process.argv, helper, logSortResult);
 };
 
 main();

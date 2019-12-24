@@ -1,26 +1,28 @@
 const { parseUserArgs } = require("./parseInput");
 
-const performFileSort = function(args, helper) {
-  let streamName, textLines;
+const performSort = function(userArgs, helper, logResult) {
   try {
-    let { files, options } = parseUserArgs(args.slice(2));
-    helper.userOptions = options;
+    let { files, options } = parseUserArgs(userArgs.slice(2));
     if (files.length != 0) {
-      let content = loadFileContents(
-        files[0],
-        helper.fs.existsSync,
-        helper.fs.readFileSync
-      );
-      content = content.split("\n");
-      if (content[content.length - 1] === "") content = content.slice(0, -1);
-      textLines = sortContent(content, options);
-      streamName = "log";
+      const sortedOutput = performFileSort(files, options, helper.fs);
+      logResult.call(helper.logger, "log", sortedOutput);
+      return;
     }
+    performStreamSort(
+      helper.inputStream,
+      options,
+      logResult.bind(helper.logger)
+    );
   } catch (error) {
-    streamName = "error";
-    textLines = [error.message];
+    logResult.call(helper.logger, "error", [error.message]);
   }
-  return { streamName, textLines };
+};
+
+const performFileSort = function(files, options, fs) {
+  let content = loadFileContents(files[0], fs.existsSync, fs.readFileSync);
+  content = content.split("\n");
+  if (content[content.length - 1] === "") content = content.slice(0, -1);
+  return sortContent(content, options);
 };
 
 const performStreamSort = function(stdin, options, callback) {
@@ -34,7 +36,7 @@ const performStreamSort = function(stdin, options, callback) {
       .split("\n")
       .slice(0, -1);
     const sortedOutput = sortContent(content, options);
-    return callback(sortedOutput.join("\n"));
+    callback("log", sortedOutput);
   });
 };
 
@@ -77,10 +79,16 @@ const numericSort = function(array) {
   return array.concat(numArray);
 };
 
+const logSortResult = function(streamName, text) {
+  const logger = this[streamName];
+  logger(text.join("\n"));
+};
+
 module.exports = {
-  parseUserArgs,
+  performSort,
   loadFileContents,
   sortContent,
   performFileSort,
-  performStreamSort
+  performStreamSort,
+  logSortResult
 };
