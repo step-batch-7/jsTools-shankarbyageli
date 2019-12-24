@@ -150,3 +150,52 @@ describe("#logSortResult", function() {
     assert.strictEqual(givenText, "ok\nbye");
   });
 });
+
+describe("#performSort", function() {
+  let testData;
+  const logResult = function(stream, text) {
+    testData = text;
+  };
+  const readFileSync = function(path) {
+    assert.strictEqual(path, "file");
+    return "hello\ngo\n";
+  };
+  const existsSync = function(path) {
+    assert.strictEqual(path, "file");
+    return true;
+  };
+  const helper = {
+    fs: { readFileSync, existsSync }
+  };
+
+  it("should perform sorting based on give options", function() {
+    const userArgs = ["", "", "-n", "file"];
+    performSort(userArgs, helper, logResult);
+    assert.deepStrictEqual(testData, ["go", "hello"]);
+  });
+
+  it("should give error if options are invalid", function() {
+    const userArgs = ["", "", "-h"];
+    performSort(userArgs, helper, logResult);
+    assert.deepStrictEqual(testData, ["sort : invalid option -- h"]);
+  });
+
+  it("should give stdin sorted if no file name is given", function() {
+    const emitter = new eventEmitter();
+    const helper = {
+      fs: { readFileSync, existsSync },
+      inputStream: emitter
+    };
+    let sortedContent;
+    const logResult = function(stream, input) {
+      sortedContent = input;
+    };
+    const userArgs = ["", "", "-n"];
+    performSort(userArgs, helper, logResult);
+    helper.inputStream.emit("data", "b\n");
+    helper.inputStream.emit("data", "c\n");
+    helper.inputStream.emit("data", "a\n");
+    helper.inputStream.emit("end");
+    assert.deepStrictEqual(sortedContent, ["a", "b", "c"]);
+  });
+});
