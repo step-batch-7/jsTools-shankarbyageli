@@ -1,20 +1,16 @@
 const { parseUserArgs } = require("./parseInput");
 
-const performSort = function(userArgs, helper, logResult) {
+const performSort = function(userArgs, utils, logResult) {
   try {
     let { files, options } = parseUserArgs(userArgs.slice(2));
     if (files.length != 0) {
-      const sortedOutput = performFileSort(files, options, helper.fs);
-      logResult.call(helper.logger, "log", sortedOutput);
+      const sortedOutput = performFileSort(files, options, utils.fs);
+      logResult.call(utils.logger, "log", sortedOutput);
       return;
     }
-    performStreamSort(
-      helper.inputStream,
-      options,
-      logResult.bind(helper.logger)
-    );
+    performStreamSort(utils.inputStream, options, logResult.bind(utils.logger));
   } catch (error) {
-    logResult.call(helper.logger, "error", [error.message]);
+    logResult.call(utils.logger, "error", [error.message]);
   }
 };
 
@@ -57,8 +53,8 @@ let sortContent = function(content, options) {
   return sortedContent;
 };
 
-const caseInsensitiveSort = function(array) {
-  return [...array].sort((a, b) => {
+const caseInsensitiveSort = function(textLines) {
+  return [...textLines].sort((a, b) => {
     const upperCaseA = a.toUpperCase();
     const upperCaseB = b.toUpperCase();
     if (upperCaseA < upperCaseB) return -1;
@@ -67,16 +63,16 @@ const caseInsensitiveSort = function(array) {
   });
 };
 
-const numericSort = function(array) {
-  array.sort((a, b) => a - b);
-  const firstNonNumber = array.find(item => {
+const numericSort = function(textLines) {
+  textLines.sort((a, b) => a - b);
+  const firstNonNumber = textLines.find(item => {
     return !Number.isInteger(Number(item)) && item != "";
   });
-  const index = array.indexOf(firstNonNumber);
-  if (index === -1) return array;
-  const numArray = array.slice(0, index);
-  array.splice(0, index);
-  return array.concat(numArray);
+  const index = textLines.indexOf(firstNonNumber);
+  if (index === -1) return textLines;
+  const numbers = textLines.slice(0, index);
+  textLines.splice(0, index);
+  return textLines.concat(numbers);
 };
 
 const logSortResult = function(streamName, text) {

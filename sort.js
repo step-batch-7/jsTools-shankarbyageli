@@ -2,12 +2,12 @@ const fs = require("fs");
 const { performSort, logSortResult } = require("./src/sortLib");
 
 const main = function() {
-  const helper = {
+  const utils = {
     fs,
     inputStream: process.stdin,
     logger: console
   };
-  performSort(process.argv, helper, logSortResult);
+  performSort(process.argv, utils, logSortResult);
 };
 
 main();
