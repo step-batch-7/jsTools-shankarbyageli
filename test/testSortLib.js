@@ -177,7 +177,7 @@ describe("#performSort", function() {
   it("should give error if options are invalid", function() {
     const userArgs = ["", "", "-h"];
     performSort(userArgs, helper, logResult);
-    assert.deepStrictEqual(testData, ["sort : invalid option -- h"]);
+    assert.deepStrictEqual(testData, ["sort: invalid option -- h"]);
   });
 
   it("should give stdin sorted if no file name is given", function() {

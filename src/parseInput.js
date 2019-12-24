@@ -10,7 +10,7 @@ const parseUserArgs = function(args) {
   });
   let [isValid, invalidOption] = isValidOptions(parsedArgs.options);
   if (isValid) return parsedArgs;
-  throw new Error(`sort : invalid option -- ${invalidOption.slice(1)}`);
+  throw new Error(`sort: invalid option -- ${invalidOption.slice(1)}`);
 };
 
 let isValidOptions = function(options) {

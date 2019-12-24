@@ -39,7 +39,7 @@ const performStreamSort = function(inputStream, options, callback) {
 
 let loadFileContents = function(path, fileExists, reader) {
   if (fileExists(path)) return reader(path).toString();
-  throw new Error("sort : No such a file or directory");
+  throw new Error("sort: No such a file or directory");
 };
 
 let sortTextLines = function(textLines, options) {
