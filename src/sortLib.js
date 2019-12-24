@@ -18,7 +18,7 @@ const performFileSort = function(files, options, fs) {
   let content = loadFileContents(files[0], fs.existsSync, fs.readFileSync);
   content = content.split("\n");
   if (content[content.length - 1] === "") content = content.slice(0, -1);
-  return sortContent(content, options);
+  return sortTextLines(content, options);
 };
 
 const performStreamSort = function(stdin, options, callback) {
@@ -31,7 +31,7 @@ const performStreamSort = function(stdin, options, callback) {
       .join("")
       .split("\n")
       .slice(0, -1);
-    const sortedOutput = sortContent(content, options);
+    const sortedOutput = sortTextLines(content, options);
     callback("log", sortedOutput);
   });
 };
@@ -41,7 +41,7 @@ let loadFileContents = function(path, fileExists, reader) {
   throw new Error("sort : No such a file or directory");
 };
 
-let sortContent = function(content, options) {
+let sortTextLines = function(content, options) {
   let sortedContent = [...content].sort();
   if (options.includes("-f")) {
     sortedContent = caseInsensitiveSort(sortedContent);
@@ -83,7 +83,7 @@ const logSortResult = function(streamName, text) {
 module.exports = {
   performSort,
   loadFileContents,
-  sortContent,
+  sortTextLines,
   performFileSort,
   performStreamSort,
   logSortResult
