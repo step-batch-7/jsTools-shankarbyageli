@@ -40,7 +40,7 @@ const performStreamSort = function(inputStream, options, callback) {
 let loadFileContents = function(path, fs) {
   try {
     if (fs.existsSync(path)) return fs.readFileSync(path).toString();
-    throw new Error("sort: No such a file or directory");
+    throw new Error("sort: No such file or directory");
   } catch (error) {
     if (error.code === "EISDIR") throw new Error("sort: Is a directory");
     throw error;
