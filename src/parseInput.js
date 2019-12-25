@@ -1,5 +1,5 @@
 const parseUserArgs = function(args) {
-  let parsedArgs = {
+  const parsedArgs = {
     files: [],
     options: []
   };
@@ -8,13 +8,13 @@ const parseUserArgs = function(args) {
       ? parsedArgs.options.push(argument)
       : parsedArgs.files.push(argument);
   });
-  let [isValid, invalidOption] = isValidOptions(parsedArgs.options);
+  const [isValid, invalidOption] = isValidOptions(parsedArgs.options);
   if (isValid) return parsedArgs;
   throw new Error(`sort: invalid option -- ${invalidOption.slice(1)}`);
 };
 
-let isValidOptions = function(options) {
-  let validOptions = ["-n", "-r", "-f"];
+const isValidOptions = function(options) {
+  const validOptions = ["-n", "-r", "-f"];
   const invalidOption = options.find(arg => {
     return !validOptions.includes(arg);
   });

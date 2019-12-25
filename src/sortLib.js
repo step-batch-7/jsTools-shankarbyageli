@@ -37,7 +37,7 @@ const performStreamSort = function(inputStream, options, callback) {
   });
 };
 
-let loadFileContents = function(path, fs) {
+const loadFileContents = function(path, fs) {
   try {
     if (fs.existsSync(path)) return fs.readFileSync(path).toString();
     throw new Error("sort: No such file or directory");
@@ -47,7 +47,7 @@ let loadFileContents = function(path, fs) {
   }
 };
 
-let sortTextLines = function(textLines, options) {
+const sortTextLines = function(textLines, options) {
   let sortedLines = [...textLines].sort();
   if (options.includes("-f")) {
     sortedLines = caseInsensitiveSort(sortedLines);
