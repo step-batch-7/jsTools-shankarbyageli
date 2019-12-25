@@ -15,7 +15,7 @@ const performSort = function(userArgs, utils, logResult) {
 };
 
 const performFileSort = function(files, options, fs) {
-  let fileContents = loadFileContents(files[0], fs.existsSync, fs.readFileSync);
+  let fileContents = loadFileContents(files[0], fs);
   fileContents = fileContents.split("\n");
   if (fileContents[fileContents.length - 1] === "")
     fileContents = fileContents.slice(0, -1);
@@ -28,18 +28,23 @@ const performStreamSort = function(inputStream, options, callback) {
     inputStreamLines.push(data.toString());
   });
   inputStream.on("end", () => {
-    const content = inputStreamLines
+    const textLines = inputStreamLines
       .join("")
       .split("\n")
       .slice(0, -1);
-    const sortedOutput = sortTextLines(content, options);
-    callback("log", sortedOutput);
+    const sortedLines = sortTextLines(textLines, options);
+    callback("log", sortedLines);
   });
 };
 
-let loadFileContents = function(path, fileExists, reader) {
-  if (fileExists(path)) return reader(path).toString();
-  throw new Error("sort: No such a file or directory");
+let loadFileContents = function(path, fs) {
+  try {
+    if (fs.existsSync(path)) return fs.readFileSync(path).toString();
+    throw new Error("sort: No such a file or directory");
+  } catch (error) {
+    if (error.code === "EISDIR") throw new Error("sort: Is a directory");
+    throw error;
+  }
 };
 
 let sortTextLines = function(textLines, options) {
@@ -65,14 +70,14 @@ const caseInsensitiveSort = function(textLines) {
 };
 
 const numericSort = function(textLines) {
-  textLines.sort((a, b) => a - b);
+  textLines.sort((lineA, lineB) => lineA - lineB);
   const firstNonNumber = textLines.find(text => {
     return !Number.isInteger(Number(text)) && text != "";
   });
-  const index = textLines.indexOf(firstNonNumber);
-  if (index === -1) return textLines;
-  const numbers = textLines.slice(0, index);
-  textLines.splice(0, index);
+  const nonNumberIndex = textLines.indexOf(firstNonNumber);
+  if (nonNumberIndex === -1) return textLines;
+  const numbers = textLines.slice(0, nonNumberIndex);
+  textLines.splice(0, nonNumberIndex);
   return textLines.concat(numbers);
 };
 

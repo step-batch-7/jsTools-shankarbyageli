@@ -11,37 +11,49 @@ const {
 } = require("../src/sortLib");
 
 describe("#loadFileContents", function() {
-  it("should load the textLines of given file if file exists", function() {
-    const reader = function(path) {
-      assert.strictEqual(path, "file");
-      return "hello world";
-    };
-    const fileExists = function(path) {
-      assert.strictEqual(path, "file");
+  const readFileSync = function(path) {
+    assert.strictEqual(path, "hello.txt");
+    return "hello world";
+  };
+  it("should load the contents of given file if file exists", function() {
+    const existsSync = function(path) {
+      assert.strictEqual(path, "hello.txt");
       return true;
     };
-    const actual = loadFileContents("file", fileExists, reader);
+    const actual = loadFileContents("hello.txt", { existsSync, readFileSync });
     const expected = "hello world";
     assert.strictEqual(actual, expected);
   });
 
-  it("should throw error if file doesn't exist", function() {
-    const reader = function(path) {
-      assert.strictEqual(path, "file");
-      return "hello world";
-    };
-    const fileExists = function(path) {
-      assert.strictEqual(path, "file");
+  it("should throw error if given file doesn't exist", function() {
+    const existsSync = function(path) {
+      assert.strictEqual(path, "hello.txt");
       return false;
     };
     assert.throws(() => {
-      loadFileContents("file", fileExists, reader);
+      loadFileContents("hello.txt", { existsSync, readFileSync });
+    }, Error);
+  });
+
+  it("should throw error if given path is a directory", function() {
+    const existsSync = function(path) {
+      assert.strictEqual(path, "hello.txt");
+      return true;
+    };
+    const readFileSync = function(path) {
+      assert.strictEqual(path, "hello.txt");
+      const error = new Error();
+      error.code = "EISDIR";
+      throw error;
+    };
+    assert.throws(() => {
+      loadFileContents("hello.txt", { existsSync, readFileSync });
     }, Error);
   });
 });
 
 describe("#sortTextLines", function() {
-  it("should sort the given array according to options", function() {
+  it("should sort the given textLines for -n options", function() {
     const textLines = ["1", "34", "2", "0"];
     const actual = sortTextLines(textLines, ["-n"]);
     const expected = ["0", "1", "2", "34"];
@@ -62,14 +74,14 @@ describe("#sortTextLines", function() {
     assert.deepStrictEqual(actual, expected);
   });
 
-  it("should do numeric sort if -n option is specified", function() {
+  it("should do numeric reverse sort if -n and -r option is specified", function() {
     const textLines = ["45", "2", "1", "10"];
-    const actual = sortTextLines(textLines, ["-n"]);
-    const expected = ["1", "2", "10", "45"];
+    const actual = sortTextLines(textLines, ["-n", "-r"]);
+    const expected = ["45", "10", "2", "1"];
     assert.deepStrictEqual(actual, expected);
   });
 
-  it("should perform numeric and case insensitive sort for -n and -r options", function() {
+  it("should perform numeric and case insensitive sort for -n and -f options", function() {
     const textLines = ["abc", "2", "Abc", "1"];
     const actual = sortTextLines(textLines, ["-n", "-f"]);
     const expected = ["Abc", "abc", "1", "2"];
