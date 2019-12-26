@@ -119,26 +119,30 @@ describe("#performSort", function() {
     fs: { readFileSync }
   };
   it("should perform sorting based on give options", function() {
-    const logResult = function(textLines) {
-      assert.strictEqual(textLines, "go\nhello");
+    const outputLoggers = {
+      logSortedLines: function(textLines) {
+        assert.strictEqual(textLines, "go\nhello");
+      },
+      logError: function(errorMsg) {}
     };
-    const logError = function(errorMsg) {};
     const userArgs = ["", "", "file"];
-    performSort(userArgs, utils, logResult, logError);
+    performSort(userArgs, utils, outputLoggers);
   });
 
   it("should give stdin sorted if no file name is given", function() {
-    const logResult = function(text) {
-      assert.strictEqual(text, "a\nb\nc");
+    const outputLoggers = {
+      logSortedLines: function(text) {
+        assert.strictEqual(text, "a\nb\nc");
+      },
+      logError: function(errorMsg) {}
     };
-    const logError = function(errorMsg) {};
     const emitter = new eventEmitter();
     const utils = {
       fs: { readFileSync },
       inputStream: emitter
     };
     const userArgs = ["", ""];
-    performSort(userArgs, utils, logResult, logError);
+    performSort(userArgs, utils, outputLoggers);
     utils.inputStream.emit("data", "b\n");
     utils.inputStream.emit("data", "c\n");
     utils.inputStream.emit("data", "a\n");

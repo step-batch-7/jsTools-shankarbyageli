@@ -1,14 +1,14 @@
-const performSort = function(userArgs, utils, sortedOutputLogger, errorLogger) {
+const performSort = function(userArgs, utils, loggers) {
   try {
     const files = userArgs.slice(2);
     if (files.length != 0) {
       const sortedOutput = performFileSort(files, utils.fs);
-      sortedOutputLogger(sortedOutput.join("\n"));
+      loggers.logSortedLines(sortedOutput.join("\n"));
       return;
     }
-    performStreamSort(utils.inputStream, sortedOutputLogger);
+    performStreamSort(utils.inputStream, loggers.logSortedLines);
   } catch (error) {
-    errorLogger([error.message].join("\n"));
+    loggers.logError([error.message].join("\n"));
   }
 };
 
@@ -20,7 +20,7 @@ const performFileSort = function(files, fs) {
   return sortTextLines(fileContents);
 };
 
-const performStreamSort = function(inputStream, logResult) {
+const performStreamSort = function(inputStream, logSortedLines) {
   const inputStreamLines = [];
   inputStream.on("data", data => {
     inputStreamLines.push(data.toString());
@@ -31,17 +31,19 @@ const performStreamSort = function(inputStream, logResult) {
       .split("\n")
       .slice(0, -1);
     const sortedLines = sortTextLines(textLines);
-    logResult(sortedLines.join("\n"));
+    logSortedLines(sortedLines.join("\n"));
   });
 };
 
 const loadFileContents = function(path, fs) {
+  const errors = {
+    EISDIR: new Error("sort: Is a directory"),
+    ENOENT: new Error("sort: No such file or directory")
+  };
   try {
     return fs.readFileSync(path).toString();
   } catch (error) {
-    if (error.code === "EISDIR") throw new Error("sort: Is a directory");
-    if (error.code === "ENOENT")
-      throw new Error("sort: No such file or directory");
+    throw errors[error.code];
   }
 };
 
