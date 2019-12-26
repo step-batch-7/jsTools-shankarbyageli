@@ -6,8 +6,7 @@ const {
   loadFileContents,
   sortTextLines,
   performFileSort,
-  performStreamSort,
-  logSortResult
+  performStreamSort
 } = require("../src/sortLib");
 
 describe("#loadFileContents", function() {
@@ -16,30 +15,24 @@ describe("#loadFileContents", function() {
     return "hello world";
   };
   it("should load the contents of given file if file exists", function() {
-    const existsSync = function(path) {
-      assert.strictEqual(path, "hello.txt");
-      return true;
-    };
-    const actual = loadFileContents("hello.txt", { existsSync, readFileSync });
+    const actual = loadFileContents("hello.txt", { readFileSync });
     const expected = "hello world";
     assert.strictEqual(actual, expected);
   });
 
   it("should throw error if given file doesn't exist", function() {
-    const existsSync = function(path) {
+    const readFileSync = function(path) {
       assert.strictEqual(path, "hello.txt");
-      return false;
+      const error = new Error();
+      error.code = "ENOENT";
+      throw error;
     };
     assert.throws(() => {
-      loadFileContents("hello.txt", { existsSync, readFileSync });
+      loadFileContents("hello.txt", { readFileSync });
     }, Error);
   });
 
   it("should throw error if given path is a directory", function() {
-    const existsSync = function(path) {
-      assert.strictEqual(path, "hello.txt");
-      return true;
-    };
     const readFileSync = function(path) {
       assert.strictEqual(path, "hello.txt");
       const error = new Error();
@@ -47,7 +40,7 @@ describe("#loadFileContents", function() {
       throw error;
     };
     assert.throws(() => {
-      loadFileContents("hello.txt", { existsSync, readFileSync });
+      loadFileContents("hello.txt", { readFileSync });
     }, Error);
   });
 });
@@ -94,13 +87,8 @@ describe("#performFileSort", function() {
     assert.strictEqual(path, "file");
     return "hello\ngo\n";
   };
-  const existsSync = function(path) {
-    assert.strictEqual(path, "file");
-    return true;
-  };
   it("should perform sorting based on given cmdArgs", function() {
     const actual = performFileSort(["file"], [], {
-      existsSync,
       readFileSync
     });
     const expected = ["go", "hello"];
@@ -113,7 +101,6 @@ describe("#performFileSort", function() {
       return "hello\ngo";
     };
     const actual = performFileSort(["file"], [], {
-      existsSync,
       readFileSync
     });
     const expected = ["go", "hello"];
@@ -121,13 +108,14 @@ describe("#performFileSort", function() {
   });
 
   it("should give error if file doesn't exist", function() {
-    const existsSync = function(path) {
+    const readFileSync = function(path) {
       assert.strictEqual(path, "file");
-      return false;
+      const error = new Error();
+      error.code = "ENOENT";
+      throw error;
     };
     assert.throws(() => {
       performFileSort(["file"], [], {
-        existsSync,
         readFileSync
       });
     }, Error);
@@ -146,20 +134,7 @@ describe("#performStreamSort", function() {
     inputStream.emit("data", "c\n");
     inputStream.emit("data", "a\n");
     inputStream.emit("end");
-    assert.deepStrictEqual(sortedLines, ["a", "b", "c"]);
-  });
-});
-
-describe("#logSortResult", function() {
-  it("should log the given data on the given stream", function() {
-    let sortedText;
-    const logger = {
-      data: function(input) {
-        sortedText = input;
-      }
-    };
-    logSortResult.call(logger, "data", ["ok", "bye"]);
-    assert.strictEqual(sortedText, "ok\nbye");
+    assert.deepStrictEqual(sortedLines, "a\nb\nc");
   });
 });
 
@@ -183,13 +158,13 @@ describe("#performSort", function() {
   it("should perform sorting based on give options", function() {
     const userArgs = ["", "", "-n", "file"];
     performSort(userArgs, helper, logResult);
-    assert.deepStrictEqual(testData, ["go", "hello"]);
+    assert.deepStrictEqual(testData, "go\nhello");
   });
 
   it("should give error if options are invalid", function() {
     const userArgs = ["", "", "-h"];
     performSort(userArgs, helper, logResult);
-    assert.deepStrictEqual(testData, ["sort: invalid option -- h"]);
+    assert.deepStrictEqual(testData, "sort: invalid option -- h");
   });
 
   it("should give stdin sorted if no file name is given", function() {
@@ -208,6 +183,6 @@ describe("#performSort", function() {
     helper.inputStream.emit("data", "c\n");
     helper.inputStream.emit("data", "a\n");
     helper.inputStream.emit("end");
-    assert.deepStrictEqual(sortedLines, ["a", "b", "c"]);
+    assert.deepStrictEqual(sortedLines, "a\nb\nc");
   });
 });

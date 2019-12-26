@@ -5,12 +5,12 @@ const performSort = function(userArgs, utils, logResult) {
     let { files, options } = parseUserArgs(userArgs.slice(2));
     if (files.length != 0) {
       const sortedOutput = performFileSort(files, options, utils.fs);
-      logResult.call(utils.logger, "log", sortedOutput);
+      logResult("log", sortedOutput.join("\n"));
       return;
     }
-    performStreamSort(utils.inputStream, options, logResult.bind(utils.logger));
+    performStreamSort(utils.inputStream, options, logResult);
   } catch (error) {
-    logResult.call(utils.logger, "error", [error.message]);
+    logResult("error", [error.message].join("\n"));
   }
 };
 
@@ -22,7 +22,7 @@ const performFileSort = function(files, options, fs) {
   return sortTextLines(fileContents, options);
 };
 
-const performStreamSort = function(inputStream, options, callback) {
+const performStreamSort = function(inputStream, options, logResult) {
   const inputStreamLines = [];
   inputStream.on("data", data => {
     inputStreamLines.push(data.toString());
@@ -33,17 +33,17 @@ const performStreamSort = function(inputStream, options, callback) {
       .split("\n")
       .slice(0, -1);
     const sortedLines = sortTextLines(textLines, options);
-    callback("log", sortedLines);
+    logResult("log", sortedLines.join("\n"));
   });
 };
 
 const loadFileContents = function(path, fs) {
   try {
-    if (fs.existsSync(path)) return fs.readFileSync(path).toString();
-    throw new Error("sort: No such file or directory");
+    return fs.readFileSync(path).toString();
   } catch (error) {
     if (error.code === "EISDIR") throw new Error("sort: Is a directory");
-    throw error;
+    if (error.code === "ENOENT")
+      throw new Error("sort: No such file or directory");
   }
 };
 
@@ -81,16 +81,10 @@ const numericSort = function(textLines) {
   return textLines.concat(numbers);
 };
 
-const logSortResult = function(streamName, textLines) {
-  const logger = this[streamName];
-  logger(textLines.join("\n"));
-};
-
 module.exports = {
   performSort,
   loadFileContents,
   sortTextLines,
   performFileSort,
-  performStreamSort,
-  logSortResult
+  performStreamSort
 };

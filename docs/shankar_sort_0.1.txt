@@ -1,4 +1,4 @@
-sort.js => Version - 0.1:
+sort.js => Version - 0.1: done
 
 Tasks : 
   Setting up the directory structure : ==> done <==
@@ -12,11 +12,13 @@ Tasks :
       add test script to package.json for npm test
       add start script to package.json for npm start
 
-  performSorting 
+  performSort ==> done <==
 
   loadFileContents ==> done <==
 
-  receiveStdin 
+  performFileSort ==> done <==
+
+  performStreamSort ==> done <==
 
   parseUserArguments ==> done <==
 
