@@ -1,2 +1,0 @@
-(node sort.js -x ./appTest/sample.txt)
-sort: invalid option -- x

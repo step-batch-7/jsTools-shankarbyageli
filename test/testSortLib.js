@@ -46,38 +46,10 @@ describe("#loadFileContents", function() {
 });
 
 describe("#sortTextLines", function() {
-  it("should sort the given textLines for -n options", function() {
+  it("should sort the given textLines for options", function() {
     const textLines = ["1", "34", "2", "0"];
-    const actual = sortTextLines(textLines, ["-n"]);
+    const actual = sortTextLines(textLines);
     const expected = ["0", "1", "2", "34"];
-    assert.deepStrictEqual(actual, expected);
-  });
-
-  it("should sort the given array in reverse order if -r option given", function() {
-    const textLines = ["1", "34", "2", "0"];
-    const actual = sortTextLines(textLines, ["-r"]);
-    const expected = ["34", "2", "1", "0"];
-    assert.deepStrictEqual(actual, expected);
-  });
-
-  it("should do case-insensitive sort if -f option is specified", function() {
-    const textLines = ["abc", "def", "Abc", "DEF"];
-    const actual = sortTextLines(textLines, ["-f"]);
-    const expected = ["Abc", "abc", "DEF", "def"];
-    assert.deepStrictEqual(actual, expected);
-  });
-
-  it("should do numeric reverse sort if -n and -r option is specified", function() {
-    const textLines = ["45", "2", "1", "10"];
-    const actual = sortTextLines(textLines, ["-n", "-r"]);
-    const expected = ["45", "10", "2", "1"];
-    assert.deepStrictEqual(actual, expected);
-  });
-
-  it("should perform numeric and case insensitive sort for -n and -f options", function() {
-    const textLines = ["abc", "2", "Abc", "1"];
-    const actual = sortTextLines(textLines, ["-n", "-f"]);
-    const expected = ["Abc", "abc", "1", "2"];
     assert.deepStrictEqual(actual, expected);
   });
 });
@@ -87,8 +59,8 @@ describe("#performFileSort", function() {
     assert.strictEqual(path, "file");
     return "hello\ngo\n";
   };
-  it("should perform sorting based on given cmdArgs", function() {
-    const actual = performFileSort(["file"], [], {
+  it("should perform sorting on given file", function() {
+    const actual = performFileSort(["file"], {
       readFileSync
     });
     const expected = ["go", "hello"];
@@ -100,7 +72,7 @@ describe("#performFileSort", function() {
       assert.strictEqual(path, "file");
       return "hello\ngo";
     };
-    const actual = performFileSort(["file"], [], {
+    const actual = performFileSort(["file"], {
       readFileSync
     });
     const expected = ["go", "hello"];
@@ -115,7 +87,7 @@ describe("#performFileSort", function() {
       throw error;
     };
     assert.throws(() => {
-      performFileSort(["file"], [], {
+      performFileSort(["file"], {
         readFileSync
       });
     }, Error);
@@ -126,10 +98,10 @@ describe("#performStreamSort", function() {
   it("should perform sorting on given data through given stream", function() {
     const inputStream = new eventEmitter();
     let sortedLines;
-    const callback = function(stream, input) {
+    const logResult = function(input) {
       sortedLines = input;
     };
-    performStreamSort(inputStream, [], callback);
+    performStreamSort(inputStream, logResult);
     inputStream.emit("data", "b\n");
     inputStream.emit("data", "c\n");
     inputStream.emit("data", "a\n");
@@ -146,40 +118,27 @@ describe("#performSort", function() {
   const utils = {
     fs: { readFileSync }
   };
-
   it("should perform sorting based on give options", function() {
-    const logResult = function(stream, text, exitCode) {
-      assert.strictEqual(stream, "log");
-      assert.strictEqual(text, "go\nhello");
-      assert.strictEqual(exitCode, 0);
+    const logResult = function(textLines) {
+      assert.strictEqual(textLines, "go\nhello");
     };
-    const userArgs = ["", "", "-n", "file"];
-    performSort(userArgs, utils, logResult);
-  });
-
-  it("should give error if options are invalid", function() {
-    const logResult = function(stream, text, exitCode) {
-      assert.strictEqual(stream, "error");
-      assert.strictEqual(text, "sort: invalid option -- h");
-      assert.strictEqual(exitCode, 2);
-    };
-    const userArgs = ["", "", "-h"];
-    performSort(userArgs, utils, logResult);
+    const logError = function(errorMsg) {};
+    const userArgs = ["", "", "file"];
+    performSort(userArgs, utils, logResult, logError);
   });
 
   it("should give stdin sorted if no file name is given", function() {
-    const logResult = function(stream, text, exitCode) {
-      assert.strictEqual(stream, "log");
+    const logResult = function(text) {
       assert.strictEqual(text, "a\nb\nc");
-      assert.strictEqual(exitCode, 0);
     };
+    const logError = function(errorMsg) {};
     const emitter = new eventEmitter();
     const utils = {
       fs: { readFileSync },
       inputStream: emitter
     };
-    const userArgs = ["", "", "-n"];
-    performSort(userArgs, utils, logResult);
+    const userArgs = ["", ""];
+    performSort(userArgs, utils, logResult, logError);
     utils.inputStream.emit("data", "b\n");
     utils.inputStream.emit("data", "c\n");
     utils.inputStream.emit("data", "a\n");

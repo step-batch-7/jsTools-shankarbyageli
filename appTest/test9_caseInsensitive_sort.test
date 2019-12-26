@@ -1,7 +1,0 @@
-(node sort.js appTest/caseInsensitiveText.txt)
-A
-B
-C
-a
-b
-c

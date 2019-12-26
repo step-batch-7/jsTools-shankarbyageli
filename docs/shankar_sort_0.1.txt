@@ -1,39 +1,53 @@
 sort.js => Version - 0.1: done
 
+Commands :
+1. node sort.js file
+
 Tasks : 
-  Setting up the directory structure : ==> done <==
+  Setting up the directory structure :
       create src and test directory.
       create sort.js file.
       create src/sortLib.js and test/testSortLib.js
 
-  Setting up the test and run environment :  ==> done <==
+  Setting up the test and run environment :
       install mocha, chai libraries.
       create package.json - npm init
       add test script to package.json for npm test
       add start script to package.json for npm start
 
-  performSort ==> done <==
+  performSort
 
-  loadFileContents ==> done <==
+  loadFileContents
 
-  performFileSort ==> done <==
+  performFileSort
 
-  performStreamSort ==> done <==
+---------------------------------------------------------------------
 
-  parseUserArguments ==> done <==
+Version 0.2:  done
 
-Commands :
-1. node sort.js file
-2. node sort.js
-3. node sort.js -n file
-4. node sort.js -n
-5. node sort.js -r file
-6. node sort.js -r
-7. node sort.js -f file
-8. node sort.js -f
-9. node sort.js -n -r file
-10. node sort.js -n -r 
-11. node sort.js -n -f file
-12. node sort.js -n -f 
-13. node sort.js -f -r file
-14. node sort.js -f -r 
+Commands:
+1. node sort.js
+
+Tasks : 
+    Adding a feature to sort standard input data.
+    adding a function to sort data through input stream
+
+    performStreamSort
+
+---------------------------------------------------------------------
+
+Version 0.3
+
+Commands:
+1. node sort.js -n file
+2. node sort.js -n
+
+Tasks : 
+    Adding the -n option support for numeric sort
+    adding the parseUserArgs
+    adding a function for numeric sorting
+
+    parseUserArgs
+    numericSort
+
+---------------------------------------------------------------------
