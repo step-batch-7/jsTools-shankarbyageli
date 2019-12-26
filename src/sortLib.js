@@ -5,12 +5,12 @@ const performSort = function(userArgs, utils, logResult) {
     let { files, options } = parseUserArgs(userArgs.slice(2));
     if (files.length != 0) {
       const sortedOutput = performFileSort(files, options, utils.fs);
-      logResult("log", sortedOutput.join("\n"));
+      logResult("log", sortedOutput.join("\n"), 0);
       return;
     }
     performStreamSort(utils.inputStream, options, logResult);
   } catch (error) {
-    logResult("error", [error.message].join("\n"));
+    logResult("error", [error.message].join("\n"), 2);
   }
 };
 
@@ -33,7 +33,7 @@ const performStreamSort = function(inputStream, options, logResult) {
       .split("\n")
       .slice(0, -1);
     const sortedLines = sortTextLines(textLines, options);
-    logResult("log", sortedLines.join("\n"));
+    logResult("log", sortedLines.join("\n"), 0);
   });
 };
 

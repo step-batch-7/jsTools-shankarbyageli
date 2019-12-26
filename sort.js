@@ -6,8 +6,10 @@ const main = function() {
     fs,
     inputStream: process.stdin
   };
-  performSort(process.argv, utils, (streamName, textLines) => {
-    console[streamName](textLines);
+  performSort(process.argv, utils, (streamName, textLines, exitCode) => {
+    const logger = console[streamName];
+    logger(textLines);
+    process.exit(exitCode);
   });
 };
 

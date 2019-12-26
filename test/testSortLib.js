@@ -139,50 +139,50 @@ describe("#performStreamSort", function() {
 });
 
 describe("#performSort", function() {
-  let testData;
-  const logResult = function(stream, text) {
-    testData = text;
-  };
   const readFileSync = function(path) {
     assert.strictEqual(path, "file");
     return "hello\ngo\n";
   };
-  const existsSync = function(path) {
-    assert.strictEqual(path, "file");
-    return true;
-  };
-  const helper = {
-    fs: { readFileSync, existsSync }
+  const utils = {
+    fs: { readFileSync }
   };
 
   it("should perform sorting based on give options", function() {
+    const logResult = function(stream, text, exitCode) {
+      assert.strictEqual(stream, "log");
+      assert.strictEqual(text, "go\nhello");
+      assert.strictEqual(exitCode, 0);
+    };
     const userArgs = ["", "", "-n", "file"];
-    performSort(userArgs, helper, logResult);
-    assert.deepStrictEqual(testData, "go\nhello");
+    performSort(userArgs, utils, logResult);
   });
 
   it("should give error if options are invalid", function() {
+    const logResult = function(stream, text, exitCode) {
+      assert.strictEqual(stream, "error");
+      assert.strictEqual(text, "sort: invalid option -- h");
+      assert.strictEqual(exitCode, 2);
+    };
     const userArgs = ["", "", "-h"];
-    performSort(userArgs, helper, logResult);
-    assert.deepStrictEqual(testData, "sort: invalid option -- h");
+    performSort(userArgs, utils, logResult);
   });
 
   it("should give stdin sorted if no file name is given", function() {
+    const logResult = function(stream, text, exitCode) {
+      assert.strictEqual(stream, "log");
+      assert.strictEqual(text, "a\nb\nc");
+      assert.strictEqual(exitCode, 0);
+    };
     const emitter = new eventEmitter();
-    const helper = {
-      fs: { readFileSync, existsSync },
+    const utils = {
+      fs: { readFileSync },
       inputStream: emitter
     };
-    let sortedLines;
-    const logResult = function(stream, input) {
-      sortedLines = input;
-    };
     const userArgs = ["", "", "-n"];
-    performSort(userArgs, helper, logResult);
-    helper.inputStream.emit("data", "b\n");
-    helper.inputStream.emit("data", "c\n");
-    helper.inputStream.emit("data", "a\n");
-    helper.inputStream.emit("end");
-    assert.deepStrictEqual(sortedLines, "a\nb\nc");
+    performSort(userArgs, utils, logResult);
+    utils.inputStream.emit("data", "b\n");
+    utils.inputStream.emit("data", "c\n");
+    utils.inputStream.emit("data", "a\n");
+    utils.inputStream.emit("end");
   });
 });
