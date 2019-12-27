@@ -8,18 +8,14 @@ const performSort = function(userArgs, ioUtils, loggers) {
 };
 
 const performStreamSort = function(inputStream, loggers) {
-  const errorMsg = {
-    EISDIR: "sort: Is a directory",
-    ENOENT: "sort: No such file or directory",
-    EACCES: "sort: Permission denied"
-  };
   const inputStreamLines = [];
+
   inputStream.on("data", data => {
     inputStreamLines.push(data.toString());
   });
   inputStream.on("error", error => {
-    if (errorMsg[error.code]) loggers.printError(errorMsg[error.code]);
-    loggers.printError("sort: Error reading file");
+    const errorMsg = generateErrorMsg(error.code);
+    loggers.printError(errorMsg);
   });
 
   inputStream.on("end", () => {
@@ -33,6 +29,18 @@ const performStreamSort = function(inputStream, loggers) {
 const sortTextLines = function(textLines) {
   let sortedLines = [...textLines].sort();
   return sortedLines;
+};
+
+const generateErrorMsg = function(errorCode) {
+  const errorMsg = {
+    EISDIR: "sort: Is a directory",
+    ENOENT: "sort: No such file or directory",
+    EACCES: "sort: Permission denied"
+  };
+  if (errorMsg[errorCode]) {
+    return errorMsg[errorCode];
+  }
+  return "sort: Error reading file";
 };
 
 module.exports = {
