@@ -1,25 +1,11 @@
 const eventEmitter = require("events").EventEmitter;
 const assert = require("chai").assert;
 
-const {
-  performSort,
-  sortTextLines,
-  performStreamSort
-} = require("../src/sortLib");
-
-describe("#sortTextLines", function() {
-  it("should sort the given textLines for options", function() {
-    const textLines = ["1", "34", "2", "0"];
-    const actual = sortTextLines(textLines);
-    const expected = ["0", "1", "2", "34"];
-    assert.deepStrictEqual(actual, expected);
-  });
-});
+const { performSort, performStreamSort } = require("../src/sortLib");
 
 describe("#performStreamSort", function() {
   it("should perform sorting on given data through given stream", function() {
     const inputStream = new eventEmitter();
-    let sortedLines;
     const outputLoggers = {
       printSortedText: function(textLines) {
         assert.strictEqual(textLines, "a\nb\nc");

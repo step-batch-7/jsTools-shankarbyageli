@@ -19,14 +19,16 @@ const performStreamSort = function(inputStream, loggers) {
   });
 
   inputStream.on("end", () => {
-    let textLines = inputStreamLines.join("");
-    textLines = textLines.split("\n").slice(0, -1);
-    const sortedLines = sortTextLines(textLines);
+    const sortedLines = sortTextLines(inputStreamLines);
     loggers.printSortedText(sortedLines.join("\n"));
   });
 };
 
-const sortTextLines = function(textLines) {
+const sortTextLines = function(text) {
+  let textLines = text.join("");
+  textLines = textLines.split("\n");
+  if (textLines[textLines.length - 1] === "")
+    textLines = textLines.slice(0, -1);
   let sortedLines = [...textLines].sort();
   return sortedLines;
 };
@@ -45,6 +47,5 @@ const generateErrorMsg = function(errorCode) {
 
 module.exports = {
   performSort,
-  sortTextLines,
   performStreamSort
 };
