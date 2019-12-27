@@ -3,47 +3,9 @@ const assert = require("chai").assert;
 
 const {
   performSort,
-  loadFileContents,
   sortTextLines,
-  performFileSort,
   performStreamSort
 } = require("../src/sortLib");
-
-describe("#loadFileContents", function() {
-  const readFileSync = function(path) {
-    assert.strictEqual(path, "hello.txt");
-    return "hello world";
-  };
-  it("should load the contents of given file if file exists", function() {
-    const actual = loadFileContents("hello.txt", { readFileSync });
-    const expected = "hello world";
-    assert.strictEqual(actual, expected);
-  });
-
-  it("should throw error if given file doesn't exist", function() {
-    const readFileSync = function(path) {
-      assert.strictEqual(path, "hello.txt");
-      const error = new Error();
-      error.code = "ENOENT";
-      throw error;
-    };
-    assert.throws(() => {
-      loadFileContents("hello.txt", { readFileSync });
-    }, Error);
-  });
-
-  it("should throw error if given path is a directory", function() {
-    const readFileSync = function(path) {
-      assert.strictEqual(path, "hello.txt");
-      const error = new Error();
-      error.code = "EISDIR";
-      throw error;
-    };
-    assert.throws(() => {
-      loadFileContents("hello.txt", { readFileSync });
-    }, Error);
-  });
-});
 
 describe("#sortTextLines", function() {
   it("should sort the given textLines for options", function() {
@@ -54,98 +16,115 @@ describe("#sortTextLines", function() {
   });
 });
 
-describe("#performFileSort", function() {
-  const readFileSync = function(path) {
-    assert.strictEqual(path, "file");
-    return "hello\ngo\n";
-  };
-  it("should perform sorting on given file", function() {
-    const actual = performFileSort(["file"], {
-      readFileSync
-    });
-    const expected = ["go", "hello"];
-    assert.deepStrictEqual(actual, expected);
-  });
-
-  it("should perform sorting based on given cmdArgs when no EOF at end of file", function() {
-    const readFileSync = function(path) {
-      assert.strictEqual(path, "file");
-      return "hello\ngo";
-    };
-    const actual = performFileSort(["file"], {
-      readFileSync
-    });
-    const expected = ["go", "hello"];
-    assert.deepStrictEqual(actual, expected);
-  });
-
-  it("should give error if file doesn't exist", function() {
-    const readFileSync = function(path) {
-      assert.strictEqual(path, "file");
-      const error = new Error();
-      error.code = "ENOENT";
-      throw error;
-    };
-    assert.throws(() => {
-      performFileSort(["file"], {
-        readFileSync
-      });
-    }, Error);
-  });
-});
-
 describe("#performStreamSort", function() {
   it("should perform sorting on given data through given stream", function() {
     const inputStream = new eventEmitter();
     let sortedLines;
-    const logResult = function(input) {
-      sortedLines = input;
+    const outputLoggers = {
+      printSortedText: function(textLines) {
+        assert.strictEqual(textLines, "a\nb\nc");
+      },
+      printError: function(errorMsg) {}
     };
-    performStreamSort(inputStream, logResult);
+    performStreamSort(inputStream, outputLoggers);
     inputStream.emit("data", "b\n");
     inputStream.emit("data", "c\n");
     inputStream.emit("data", "a\n");
     inputStream.emit("end");
-    assert.deepStrictEqual(sortedLines, "a\nb\nc");
+  });
+
+  it("should give error if the file doesn't exist", function(done) {
+    const outputLoggers = {
+      printSortedText: function(text) {},
+      printError: function(errorMsg) {
+        assert.strictEqual(errorMsg, "sort: No such file or directory");
+        done();
+      }
+    };
+    const utils = {
+      fs: {
+        createReadStream: function() {
+          return new eventEmitter();
+        }
+      },
+      inputStream: new eventEmitter()
+    };
+    const error = new Error("sort: No such file or directory");
+    error.code = "ENOENT";
+    const inputStream = utils.fs.createReadStream("badfile");
+    performStreamSort(inputStream, outputLoggers);
+    inputStream.emit("error", error);
+  });
+
+  it("should give default error if no error code matches", function(done) {
+    const outputLoggers = {
+      printSortedText: function(text) {},
+      printError: function(errorMsg) {
+        assert.strictEqual(errorMsg, "sort: Error reading file");
+        done();
+      }
+    };
+    const utils = {
+      fs: {
+        createReadStream: function() {
+          return new eventEmitter();
+        }
+      },
+      inputStream: new eventEmitter()
+    };
+    const error = new Error("sort: unknown error");
+    error.code = "UNKNOWN";
+    const inputStream = utils.fs.createReadStream("file");
+    performStreamSort(inputStream, outputLoggers);
+    inputStream.emit("error", error);
   });
 });
 
 describe("#performSort", function() {
-  const readFileSync = function(path) {
-    assert.strictEqual(path, "file");
-    return "hello\ngo\n";
-  };
-  const utils = {
-    fs: { readFileSync }
-  };
-  it("should perform sorting based on give options", function() {
+  it("should perform sorting on given file contents", function() {
+    const userArgs = ["", "", "file"];
     const outputLoggers = {
-      logSortedLines: function(textLines) {
+      printSortedText: function(textLines) {
         assert.strictEqual(textLines, "go\nhello");
       },
-      logError: function(errorMsg) {}
+      printError: function(errorMsg) {}
     };
-    const userArgs = ["", "", "file"];
+    const utils = {
+      fs: {
+        createReadStream: function() {
+          return new eventEmitter();
+        }
+      }
+    };
+    const inputStream = utils.fs.createReadStream();
     performSort(userArgs, utils, outputLoggers);
+    inputStream.emit("data", "b\n");
+    inputStream.emit("data", "c\n");
+    inputStream.emit("data", "a\n");
+    inputStream.emit("end");
   });
 
   it("should give stdin sorted if no file name is given", function() {
+    const userArgs = ["", ""];
     const outputLoggers = {
-      logSortedLines: function(text) {
+      printSortedText: function(text) {
         assert.strictEqual(text, "a\nb\nc");
       },
-      logError: function(errorMsg) {}
+      printError: function(errorMsg) {}
     };
-    const emitter = new eventEmitter();
     const utils = {
-      fs: { readFileSync },
-      inputStream: emitter
+      fs: {
+        createReadStream: function() {
+          return new eventEmitter();
+        }
+      },
+      inputStream: new eventEmitter()
     };
-    const userArgs = ["", ""];
+    const inputStream = utils.fs.createReadStream();
     performSort(userArgs, utils, outputLoggers);
-    utils.inputStream.emit("data", "b\n");
-    utils.inputStream.emit("data", "c\n");
-    utils.inputStream.emit("data", "a\n");
-    utils.inputStream.emit("end");
+    inputStream.emit("data", "b\n");
+    inputStream.emit("data", "c\n");
+    inputStream.emit("data", "a\n");
+    inputStream.emit("end");
   });
 });

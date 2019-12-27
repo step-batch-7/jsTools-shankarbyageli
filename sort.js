@@ -3,20 +3,20 @@ const { performSort } = require("./src/sortLib");
 
 const main = function() {
   const sortResultPrinters = {
-    logError: function(errorMsg) {
+    printError: function(errorMsg) {
       console.error(errorMsg);
       process.exit(2);
     },
-    logSortedLines: function(sortedLines) {
+    printSortedText: function(sortedLines) {
       console.log(sortedLines);
       process.exit(0);
     }
   };
-  const utils = {
+  const ioUtils = {
     fs,
     inputStream: process.stdin
   };
-  performSort(process.argv, utils, sortResultPrinters);
+  performSort(process.argv, ioUtils, sortResultPrinters);
 };
 
 main();
