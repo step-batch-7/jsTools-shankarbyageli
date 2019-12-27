@@ -2,21 +2,16 @@ const fs = require("fs");
 const { performSort } = require("./src/sortLib");
 
 const main = function() {
-  const sortResultPrinters = {
-    printError: function(errorMsg) {
-      console.error(errorMsg);
-      process.exit(2);
-    },
-    printSortedText: function(sortedLines) {
-      console.log(sortedLines);
-      process.exit(0);
-    }
+  const printSortResult = function(sortResult) {
+    process.stdout.write(sortResult.sortedLines);
+    process.stderr.write(sortResult.error);
+    process.exit(sortResult.exitCode);
   };
   const ioUtils = {
-    fs,
+    createReadStream: fs.createReadStream,
     inputStream: process.stdin
   };
-  performSort(process.argv, ioUtils, sortResultPrinters);
+  performSort(process.argv, ioUtils, printSortResult);
 };
 
 main();

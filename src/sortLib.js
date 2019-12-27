@@ -1,7 +1,7 @@
-const performSort = function(userArgs, ioUtils, loggers) {
+const performSort = function(userArgs, ioUtils, outputWriter) {
   const files = userArgs.slice(2);
   if (files.length != 0) {
-    ioUtils.inputStream = ioUtils.fs.createReadStream(files[0]);
+    ioUtils.inputStream = ioUtils.createReadStream(files[0]);
   }
   const inputStream = ioUtils.inputStream;
   const inputStreamLines = [];
@@ -10,19 +10,18 @@ const performSort = function(userArgs, ioUtils, loggers) {
   });
   inputStream.on("error", error => {
     const errorMsg = generateErrorMsg(error.code);
-    loggers.printError(errorMsg);
+    outputWriter({ error: `${errorMsg}\n`, sortedLines: "", exitCode: 2 });
   });
   inputStream.on("end", () => {
     const sortedLines = sortTextLines(inputStreamLines);
-    loggers.printSortedText(sortedLines.join("\n"));
+    outputWriter({ error: "", sortedLines: `${sortedLines.join("\n")}\n`, exitCode: 2 });
   });
 };
 
 const sortTextLines = function(text) {
   let textLines = text.join("");
   textLines = textLines.split("\n");
-  if (textLines[textLines.length - 1] === "")
-    textLines = textLines.slice(0, -1);
+  if (textLines[textLines.length - 1] === "") textLines = textLines.slice(0, -1);
   let sortedLines = [...textLines].sort();
   return sortedLines;
 };
