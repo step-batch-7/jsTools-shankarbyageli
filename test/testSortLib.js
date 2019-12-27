@@ -12,10 +12,6 @@ describe("#performSort", function() {
     },
     inputStream: new eventEmitter()
   };
-  const outputLoggers = {
-    printSortedText: function(text) {},
-    printError: function(errorMsg) {}
-  };
   it("should perform sorting on given data through given stream", function() {
     const userArgs = ["", ""];
     const outputLoggers = {
@@ -25,10 +21,11 @@ describe("#performSort", function() {
       printError: function(errorMsg) {}
     };
     performSort(userArgs, ioUtils, outputLoggers);
-    ioUtils.inputStream.emit("data", "b\n");
-    ioUtils.inputStream.emit("data", "c\n");
-    ioUtils.inputStream.emit("data", "a\n");
-    ioUtils.inputStream.emit("end");
+    const inputStream = ioUtils.inputStream;
+    inputStream.emit("data", "b\n");
+    inputStream.emit("data", "c\n");
+    inputStream.emit("data", "a\n");
+    inputStream.emit("end");
   });
 
   it("should give error if the file doesn't exist", function(done) {
@@ -43,7 +40,8 @@ describe("#performSort", function() {
     const error = new Error("sort: No such file or directory");
     error.code = "ENOENT";
     performSort(userArgs, ioUtils, outputLoggers);
-    ioUtils.inputStream.emit("error", error);
+    const inputStream = ioUtils.inputStream;
+    inputStream.emit("error", error);
   });
 
   it("should give default error if no error code matches", function(done) {
@@ -58,6 +56,7 @@ describe("#performSort", function() {
     const error = new Error("sort: unknown error");
     error.code = "UNKNOWN";
     performSort(userArgs, ioUtils, outputLoggers);
-    ioUtils.inputStream.emit("error", error);
+    const inputStream = ioUtils.inputStream;
+    inputStream.emit("error", error);
   });
 });

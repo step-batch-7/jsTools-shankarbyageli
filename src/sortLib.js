@@ -3,15 +3,16 @@ const performSort = function(userArgs, ioUtils, loggers) {
   if (files.length != 0) {
     ioUtils.inputStream = ioUtils.fs.createReadStream(files[0]);
   }
+  const inputStream = ioUtils.inputStream;
   const inputStreamLines = [];
-  ioUtils.inputStream.on("data", data => {
+  inputStream.on("data", data => {
     inputStreamLines.push(data.toString());
   });
-  ioUtils.inputStream.on("error", error => {
+  inputStream.on("error", error => {
     const errorMsg = generateErrorMsg(error.code);
     loggers.printError(errorMsg);
   });
-  ioUtils.inputStream.on("end", () => {
+  inputStream.on("end", () => {
     const sortedLines = sortTextLines(inputStreamLines);
     loggers.printSortedText(sortedLines.join("\n"));
   });
