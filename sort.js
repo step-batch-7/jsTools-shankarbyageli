@@ -1,5 +1,5 @@
 const fs = require("fs");
-const { performSort } = require("./src/sortLib");
+const { performSort, getInputStream } = require("./src/sortLib");
 
 const main = function() {
   const printSortResult = function(sortResult) {
@@ -7,11 +7,12 @@ const main = function() {
     process.stderr.write(sortResult.error);
     process.exit(sortResult.exitCode);
   };
-  const ioUtils = {
+  const streams = {
     createReadStream: fs.createReadStream,
     inputStream: process.stdin
   };
-  performSort(process.argv, ioUtils, printSortResult);
+  const inputStream = getInputStream(process.argv, streams);
+  performSort(inputStream, printSortResult);
 };
 
 main();

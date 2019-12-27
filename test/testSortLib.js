@@ -1,18 +1,37 @@
-const eventEmitter = require("events").EventEmitter;
+const EventEmitter = require("events").EventEmitter;
 const assert = require("chai").assert;
 
-const { performSort } = require("../src/sortLib");
+const { performSort, getInputStream } = require("../src/sortLib");
+
+describe("#getInputStream", function() {
+  it("should give process.stdin as inputStream if no file is specified", function() {
+    const userArgs = ["", ""];
+    const streams = {
+      createReadStream: function() {
+        return new EventEmitter();
+      },
+      inputStream: process.stdin
+    };
+    const actual = getInputStream(userArgs, streams);
+    assert.strictEqual(actual, process.stdin);
+  });
+
+  it("should give file stream as inputStream if file is specified", function() {
+    const userArgs = ["", "", "file"];
+    const fileInputStream = new EventEmitter();
+    const streams = {
+      createReadStream: function() {
+        return fileInputStream;
+      },
+      inputStream: process.stdin
+    };
+    const actual = getInputStream(userArgs, streams);
+    assert.strictEqual(actual, fileInputStream);
+  });
+});
 
 describe("#performSort", function() {
-  const ioUtils = {
-    createReadStream: function() {
-      return new eventEmitter();
-    },
-    inputStream: new eventEmitter()
-  };
-
   it("should give error if the file doesn't exist", function(done) {
-    const userArgs = ["", "", "badFile"];
     const printSortResult = function({ error, sortedLines, exitCode }) {
       assert.strictEqual(error, "sort: No such file or directory\n");
       assert.strictEqual(sortedLines, "");
@@ -22,20 +41,19 @@ describe("#performSort", function() {
     };
     const error = new Error("sort: No such file or directory");
     error.code = "ENOENT";
-    performSort(userArgs, ioUtils, printSortResult);
-    const inputStream = ioUtils.inputStream;
+    const inputStream = new EventEmitter();
+    performSort(inputStream, printSortResult);
     inputStream.emit("error", error);
   });
 
   it("should perform sorting on given data through given stream", function() {
-    const userArgs = ["", ""];
     const printSortResult = function({ error, sortedLines, exitCode }) {
       assert.strictEqual(error, "");
       assert.strictEqual(sortedLines, "a\nb\nc\n");
       assert.strictEqual(exitCode, 0);
     };
-    performSort(userArgs, ioUtils, printSortResult);
-    const inputStream = ioUtils.inputStream;
+    const inputStream = new EventEmitter();
+    performSort(inputStream, printSortResult);
     inputStream.emit("data", "b\n");
     inputStream.emit("data", "c\n");
     inputStream.emit("data", "a\n");
@@ -43,7 +61,6 @@ describe("#performSort", function() {
   });
 
   it("should give default error if no error code matches", function(done) {
-    const userArgs = ["", "", "file"];
     const printSortResult = function({ error, sortedLines, exitCode }) {
       assert.strictEqual(error, "sort: Error reading file\n");
       assert.strictEqual(sortedLines, "");
@@ -53,8 +70,8 @@ describe("#performSort", function() {
     };
     const error = new Error("sort: unknown error");
     error.code = "UNKNOWN";
-    performSort(userArgs, ioUtils, printSortResult);
-    const inputStream = ioUtils.inputStream;
+    const inputStream = new EventEmitter();
+    performSort(inputStream, printSortResult);
     inputStream.emit("error", error);
   });
 });

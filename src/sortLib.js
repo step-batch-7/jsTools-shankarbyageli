@@ -1,21 +1,24 @@
-const performSort = function(userArgs, ioUtils, outputWriter) {
-  const files = userArgs.slice(2);
-  if (files.length != 0) {
-    ioUtils.inputStream = ioUtils.createReadStream(files[0]);
-  }
-  const inputStream = ioUtils.inputStream;
+const performSort = function(inputStream, onFinish) {
   const inputStreamLines = [];
   inputStream.on("data", data => {
     inputStreamLines.push(data.toString());
   });
   inputStream.on("error", error => {
     const errorMsg = generateErrorMsg(error.code);
-    outputWriter({ error: `${errorMsg}\n`, sortedLines: "", exitCode: 2 });
+    onFinish({ error: `${errorMsg}\n`, sortedLines: "", exitCode: 2 });
   });
   inputStream.on("end", () => {
     const sortedLines = sortTextLines(inputStreamLines);
-    outputWriter({ error: "", sortedLines: `${sortedLines.join("\n")}\n`, exitCode: 0 });
+    onFinish({ error: "", sortedLines: `${sortedLines.join("\n")}\n`, exitCode: 0 });
   });
+};
+
+const getInputStream = function(userArgs, streams) {
+  const files = userArgs.slice(2);
+  if (files.length != 0) {
+    return streams.createReadStream(files[0]);
+  }
+  return streams.inputStream;
 };
 
 const sortTextLines = function(text) {
@@ -39,5 +42,6 @@ const generateErrorMsg = function(errorCode) {
 };
 
 module.exports = {
-  performSort
+  performSort,
+  getInputStream
 };
