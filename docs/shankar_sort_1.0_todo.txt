@@ -43,9 +43,9 @@ Commands:
 2. node sort.js -n
 
 Tasks : 
-    Adding the -n option support for numeric sort
-    adding the parseUserArgs
-    adding a function for numeric sorting
+    Add the -n option support for numeric sort
+    add the parseUserArgs
+    add a function for numeric sorting
 
     parseUserArgs
     numericSort

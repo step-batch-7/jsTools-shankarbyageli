@@ -1,14 +1,14 @@
 const performSort = function(inputStream, onFinish) {
-  const inputStreamLines = [];
+  let inputStreamText = "";
   inputStream.on("data", data => {
-    inputStreamLines.push(data.toString());
+    inputStreamText += data.toString();
   });
   inputStream.on("error", error => {
     const errorMsg = generateErrorMsg(error.code);
     onFinish({ error: `${errorMsg}\n`, sortedLines: "", exitCode: 2 });
   });
   inputStream.on("end", () => {
-    const sortedLines = sortTextLines(inputStreamLines);
+    const sortedLines = sortTextLines(inputStreamText);
     onFinish({ error: "", sortedLines: `${sortedLines.join("\n")}\n`, exitCode: 0 });
   });
 };
@@ -22,8 +22,7 @@ const getInputStream = function(userArgs, streams) {
 };
 
 const sortTextLines = function(text) {
-  let textLines = text.join("");
-  textLines = textLines.split("\n");
+  let textLines = text.split("\n");
   if (textLines[textLines.length - 1] === "") textLines = textLines.slice(0, -1);
   let sortedLines = [...textLines].sort();
   return sortedLines;

@@ -1,14 +1,14 @@
-const EventEmitter = require("events").EventEmitter;
+const ReadableStream = require("stream").Readable;
 const assert = require("chai").assert;
-
 const { performSort, getInputStream } = require("../src/sortLib");
 
 describe("#getInputStream", function() {
   it("should give process.stdin as inputStream if no file is specified", function() {
     const userArgs = ["", ""];
+    const fileInputStream = new ReadableStream();
     const streams = {
       createReadStream: function() {
-        return new EventEmitter();
+        return fileInputStream;
       },
       inputStream: process.stdin
     };
@@ -18,7 +18,7 @@ describe("#getInputStream", function() {
 
   it("should give file stream as inputStream if file is specified", function() {
     const userArgs = ["", "", "file"];
-    const fileInputStream = new EventEmitter();
+    const fileInputStream = new ReadableStream();
     const streams = {
       createReadStream: function() {
         return fileInputStream;
@@ -41,7 +41,8 @@ describe("#performSort", function() {
     };
     const error = new Error("sort: No such file or directory");
     error.code = "ENOENT";
-    const inputStream = new EventEmitter();
+    const inputStream = new ReadableStream();
+    inputStream._read = function() {};
     performSort(inputStream, printSortResult);
     inputStream.emit("error", error);
   });
@@ -52,7 +53,8 @@ describe("#performSort", function() {
       assert.strictEqual(sortedLines, "a\nb\nc\n");
       assert.strictEqual(exitCode, 0);
     };
-    const inputStream = new EventEmitter();
+    const inputStream = new ReadableStream();
+    inputStream._read = function() {};
     performSort(inputStream, printSortResult);
     inputStream.emit("data", "b\n");
     inputStream.emit("data", "c\n");
@@ -70,7 +72,8 @@ describe("#performSort", function() {
     };
     const error = new Error("sort: unknown error");
     error.code = "UNKNOWN";
-    const inputStream = new EventEmitter();
+    const inputStream = new ReadableStream();
+    inputStream._read = function() {};
     performSort(inputStream, printSortResult);
     inputStream.emit("error", error);
   });
