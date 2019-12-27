@@ -14,7 +14,7 @@ const performSort = function(userArgs, ioUtils, outputWriter) {
   });
   inputStream.on("end", () => {
     const sortedLines = sortTextLines(inputStreamLines);
-    outputWriter({ error: "", sortedLines: `${sortedLines.join("\n")}\n`, exitCode: 2 });
+    outputWriter({ error: "", sortedLines: `${sortedLines.join("\n")}\n`, exitCode: 0 });
   });
 };
 

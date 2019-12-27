@@ -15,7 +15,7 @@ describe("#performSort", function() {
     const printSortResult = function({ error, sortedLines, exitCode }) {
       assert.strictEqual(error, "");
       assert.strictEqual(sortedLines, "a\nb\nc\n");
-      assert.strictEqual(exitCode, 2);
+      assert.strictEqual(exitCode, 0);
     };
     performSort(userArgs, ioUtils, printSortResult);
     const inputStream = ioUtils.inputStream;
