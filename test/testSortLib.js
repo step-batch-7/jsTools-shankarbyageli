@@ -27,7 +27,7 @@ describe("#performStreamSort", function() {
         done();
       }
     };
-    const utils = {
+    const ioUtils = {
       fs: {
         createReadStream: function() {
           return new eventEmitter();
@@ -37,7 +37,7 @@ describe("#performStreamSort", function() {
     };
     const error = new Error("sort: No such file or directory");
     error.code = "ENOENT";
-    const inputStream = utils.fs.createReadStream("badfile");
+    const inputStream = ioUtils.fs.createReadStream("badfile");
     performStreamSort(inputStream, outputLoggers);
     inputStream.emit("error", error);
   });
@@ -50,7 +50,7 @@ describe("#performStreamSort", function() {
         done();
       }
     };
-    const utils = {
+    const ioUtils = {
       fs: {
         createReadStream: function() {
           return new eventEmitter();
@@ -60,7 +60,7 @@ describe("#performStreamSort", function() {
     };
     const error = new Error("sort: unknown error");
     error.code = "UNKNOWN";
-    const inputStream = utils.fs.createReadStream("file");
+    const inputStream = ioUtils.fs.createReadStream("file");
     performStreamSort(inputStream, outputLoggers);
     inputStream.emit("error", error);
   });
@@ -75,15 +75,15 @@ describe("#performSort", function() {
       },
       printError: function(errorMsg) {}
     };
-    const utils = {
+    const ioUtils = {
       fs: {
         createReadStream: function() {
           return new eventEmitter();
         }
       }
     };
-    const inputStream = utils.fs.createReadStream();
-    performSort(userArgs, utils, outputLoggers);
+    const inputStream = ioUtils.fs.createReadStream();
+    performSort(userArgs, ioUtils, outputLoggers);
     inputStream.emit("data", "b\n");
     inputStream.emit("data", "c\n");
     inputStream.emit("data", "a\n");
@@ -98,7 +98,7 @@ describe("#performSort", function() {
       },
       printError: function(errorMsg) {}
     };
-    const utils = {
+    const ioUtils = {
       fs: {
         createReadStream: function() {
           return new eventEmitter();
@@ -106,8 +106,8 @@ describe("#performSort", function() {
       },
       inputStream: new eventEmitter()
     };
-    const inputStream = utils.fs.createReadStream();
-    performSort(userArgs, utils, outputLoggers);
+    const inputStream = ioUtils.fs.createReadStream();
+    performSort(userArgs, ioUtils, outputLoggers);
     inputStream.emit("data", "b\n");
     inputStream.emit("data", "c\n");
     inputStream.emit("data", "a\n");
