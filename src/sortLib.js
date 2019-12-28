@@ -1,12 +1,12 @@
 const performSort = function(inputStream, onFinish) {
-  let inputStreamText = "";
-  inputStream.on("data", data => {
+  let inputStreamText = '';
+  inputStream.on('data', data => {
     inputStreamText += data.toString();
   });
-  inputStream.on("error", error => {
+  inputStream.on('error', error => {
     onFinish(getPrintableResult({ error }));
   });
-  inputStream.on("end", () => {
+  inputStream.on('end', () => {
     const sortedLines = sortTextLines(inputStreamText);
     onFinish(getPrintableResult({ sortedLines }));
   });
@@ -15,37 +15,41 @@ const performSort = function(inputStream, onFinish) {
 const getPrintableResult = function(sortResult) {
   if (sortResult.error) {
     const errorMsg = generateErrorMsg(sortResult.error.code);
-    return { error: `${errorMsg}\n`, sortedLines: "" };
+    return { error: `${errorMsg}\n`, sortedLines: '' };
   }
   const sortedLines = sortResult.sortedLines;
-  return { error: "", sortedLines: `${sortedLines.join("\n")}\n` };
+  return { error: '', sortedLines: `${sortedLines.join('\n')}\n` };
 };
 
 const getInputStream = function(userArgs, streams) {
-  const files = userArgs.slice(2);
-  if (files.length != 0) {
-    return streams.createReadStream(files[0]);
+  const firstFileIndex = 0, userArgsIndex = 2;
+  const files = userArgs.slice(userArgsIndex);
+  if (files.length) {
+    return streams.createReadStream(files[firstFileIndex]);
   }
   return streams.inputStream;
 };
 
 const sortTextLines = function(text) {
-  let textLines = text.split("\n");
-  if (textLines[textLines.length - 1] === "") textLines = textLines.slice(0, -1);
-  let sortedLines = [...textLines].sort();
+  const lastIndex = -1, firstIndex = 0;
+  let textLines = text.split('\n');
+  if (textLines[textLines.length + lastIndex] === '') {
+    textLines = textLines.slice(firstIndex, lastIndex);
+  }
+  const sortedLines = [...textLines].sort();
   return sortedLines;
 };
 
 const generateErrorMsg = function(errorCode) {
   const errorMsg = {
-    EISDIR: "sort: Is a directory",
-    ENOENT: "sort: No such file or directory",
-    EACCES: "sort: Permission denied"
+    EISDIR: 'sort: Is a directory',
+    ENOENT: 'sort: No such file or directory',
+    EACCES: 'sort: Permission denied'
   };
   if (errorMsg[errorCode]) {
     return errorMsg[errorCode];
   }
-  return "sort: Error reading file";
+  return 'sort: Error reading file';
 };
 
 module.exports = {

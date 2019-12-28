@@ -1,5 +1,6 @@
-sort.js => Version - 0.1: done
+sort.js => 
 
+Version - 0.1: done
 Commands :
 1. node sort.js file
 
@@ -24,14 +25,33 @@ Tasks :
 ---------------------------------------------------------------------
 
 Version 0.2:  done
+    Adding a feature to sort standard input data.
 
 Commands:
 1. node sort.js
 
 Tasks : 
-    Adding a feature to sort standard input data.
     adding a function to sort data through input stream
+    modify the performSort function to add input stream support
 
-    performStreamSort
+    performSort
+    generateErrorMsg
+
+---------------------------------------------------------------------
+
+Version 0.3 :
+    Adding the -n option support for numeric sort
+
+Commands:
+1. node sort.js -n file
+2. node sort.js -n
+
+Tasks : 
+    add the parseUserArgs for parsing -n option
+    add a function for numeric sort on -n option
+    modify the sortTextLines function to sort numerically
+
+    parseUserArgs
+    numericSort
 
 ---------------------------------------------------------------------

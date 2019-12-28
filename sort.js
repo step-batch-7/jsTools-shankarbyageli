@@ -1,11 +1,13 @@
-const fs = require("fs");
-const { performSort, getInputStream } = require("./src/sortLib");
+const fs = require('fs');
+const { performSort, getInputStream } = require('./src/sortLib');
 
 const main = function() {
   const printSortResult = function(sortResult) {
     process.stdout.write(sortResult.sortedLines);
     process.stderr.write(sortResult.error);
-    if (sortResult.error) process.exitCode = 2;
+    if (sortResult.error) {
+      process.exitCode = 2;
+    }
   };
   const streams = {
     createReadStream: fs.createReadStream,

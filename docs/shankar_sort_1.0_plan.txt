@@ -1,5 +1,31 @@
 sort.js 1.0.0:
 
+Commands : 
+Version 0.1 :
+  node sort.js filename
+
+Version 0.2 :
+  node sort.js
+
+Version 0.3 :
+  node sort.js -n filename
+  node sort.js -n
+
+Commands :
+  node sort.js -f filename
+  node sort.js -f
+  node sort.js -r filename
+  node sort.js -r
+  node sort.js -n -r filename
+  node sort.js -n -r
+  node sort.js -n -f filename
+  node sort.js -n -f
+  node sort.js -f -r filename
+  node sort.js -f -r
+
+All the above commands with multiple files
+ex : node sort.js -n file1 file2 file3...
+
 BlackBox of the App:
   ['filename'] => sort.js => sorted lines of the file
   example Input file contents : box
