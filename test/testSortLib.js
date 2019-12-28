@@ -36,7 +36,6 @@ describe("#performSort", function() {
     const printSortResult = function({ error, sortedLines }) {
       assert.strictEqual(error, "sort: No such file or directory\n");
       assert.strictEqual(sortedLines, "");
-      assert.strictEqual(process.exitCode, 2);
       inputStream.removeAllListeners();
       callCount++;
     };
@@ -53,7 +52,6 @@ describe("#performSort", function() {
     let callCount = 0;
     const printSortResult = function({ error, sortedLines }) {
       assert.strictEqual(error, "");
-      assert.strictEqual(process.exitCode, 0);
       assert.strictEqual(sortedLines, "a\nb\nc\n");
       callCount++;
     };
@@ -72,7 +70,6 @@ describe("#performSort", function() {
     const printSortResult = function({ error, sortedLines }) {
       assert.strictEqual(error, "sort: Error reading file\n");
       assert.strictEqual(sortedLines, "");
-      assert.strictEqual(process.exitCode, 2);
       inputStream.removeAllListeners();
       callCount++;
     };

@@ -5,6 +5,7 @@ const main = function() {
   const printSortResult = function(sortResult) {
     process.stdout.write(sortResult.sortedLines);
     process.stderr.write(sortResult.error);
+    if (sortResult.error) process.exitCode = 2;
   };
   const streams = {
     createReadStream: fs.createReadStream,

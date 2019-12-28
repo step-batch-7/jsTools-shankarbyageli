@@ -4,11 +4,9 @@ const performSort = function(inputStream, onFinish) {
     inputStreamText += data.toString();
   });
   inputStream.on("error", error => {
-    process.exitCode = 2;
     onFinish(getPrintableResult({ error }));
   });
   inputStream.on("end", () => {
-    process.exitCode = 0;
     const sortedLines = sortTextLines(inputStreamText);
     onFinish(getPrintableResult({ sortedLines }));
   });
