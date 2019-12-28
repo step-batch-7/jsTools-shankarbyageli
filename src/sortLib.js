@@ -4,13 +4,23 @@ const performSort = function(inputStream, onFinish) {
     inputStreamText += data.toString();
   });
   inputStream.on("error", error => {
-    const errorMsg = generateErrorMsg(error.code);
-    onFinish({ error: `${errorMsg}\n`, sortedLines: "", exitCode: 2 });
+    process.exitCode = 2;
+    onFinish(getPrintableResult({ error }));
   });
   inputStream.on("end", () => {
+    process.exitCode = 0;
     const sortedLines = sortTextLines(inputStreamText);
-    onFinish({ error: "", sortedLines: `${sortedLines.join("\n")}\n`, exitCode: 0 });
+    onFinish(getPrintableResult({ sortedLines }));
   });
+};
+
+const getPrintableResult = function(sortResult) {
+  if (sortResult.error) {
+    const errorMsg = generateErrorMsg(sortResult.error.code);
+    return { error: `${errorMsg}\n`, sortedLines: "" };
+  }
+  const sortedLines = sortResult.sortedLines;
+  return { error: "", sortedLines: `${sortedLines.join("\n")}\n` };
 };
 
 const getInputStream = function(userArgs, streams) {

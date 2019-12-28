@@ -31,13 +31,14 @@ describe("#getInputStream", function() {
 });
 
 describe("#performSort", function() {
-  it("should give error if the file doesn't exist", function(done) {
-    const printSortResult = function({ error, sortedLines, exitCode }) {
+  it("should give error if the file doesn't exist", function() {
+    let callCount = 0;
+    const printSortResult = function({ error, sortedLines }) {
       assert.strictEqual(error, "sort: No such file or directory\n");
       assert.strictEqual(sortedLines, "");
-      assert.strictEqual(exitCode, 2);
+      assert.strictEqual(process.exitCode, 2);
       inputStream.removeAllListeners();
-      done();
+      callCount++;
     };
     const error = new Error("sort: No such file or directory");
     error.code = "ENOENT";
@@ -45,13 +46,16 @@ describe("#performSort", function() {
     inputStream._read = function() {};
     performSort(inputStream, printSortResult);
     inputStream.emit("error", error);
+    assert.strictEqual(callCount, 1);
   });
 
   it("should perform sorting on given data through given stream", function() {
-    const printSortResult = function({ error, sortedLines, exitCode }) {
+    let callCount = 0;
+    const printSortResult = function({ error, sortedLines }) {
       assert.strictEqual(error, "");
+      assert.strictEqual(process.exitCode, 0);
       assert.strictEqual(sortedLines, "a\nb\nc\n");
-      assert.strictEqual(exitCode, 0);
+      callCount++;
     };
     const inputStream = new ReadableStream();
     inputStream._read = function() {};
@@ -60,15 +64,17 @@ describe("#performSort", function() {
     inputStream.emit("data", "c\n");
     inputStream.emit("data", "a\n");
     inputStream.emit("end");
+    assert.strictEqual(callCount, 1);
   });
 
-  it("should give default error if no error code matches", function(done) {
-    const printSortResult = function({ error, sortedLines, exitCode }) {
+  it("should give default error if no error code matches", function() {
+    let callCount = 0;
+    const printSortResult = function({ error, sortedLines }) {
       assert.strictEqual(error, "sort: Error reading file\n");
       assert.strictEqual(sortedLines, "");
-      assert.strictEqual(exitCode, 2);
+      assert.strictEqual(process.exitCode, 2);
       inputStream.removeAllListeners();
-      done();
+      callCount++;
     };
     const error = new Error("sort: unknown error");
     error.code = "UNKNOWN";
@@ -76,5 +82,6 @@ describe("#performSort", function() {
     inputStream._read = function() {};
     performSort(inputStream, printSortResult);
     inputStream.emit("error", error);
+    assert.strictEqual(callCount, 1);
   });
 });

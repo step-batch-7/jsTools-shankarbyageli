@@ -35,19 +35,3 @@ Tasks :
     performStreamSort
 
 ---------------------------------------------------------------------
-
-Version 0.3
-
-Commands:
-1. node sort.js -n file
-2. node sort.js -n
-
-Tasks : 
-    Add the -n option support for numeric sort
-    add the parseUserArgs
-    add a function for numeric sorting
-
-    parseUserArgs
-    numericSort
-
----------------------------------------------------------------------
