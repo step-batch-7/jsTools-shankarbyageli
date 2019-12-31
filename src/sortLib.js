@@ -5,12 +5,8 @@ const performSort = function(inputStream, onFinish) {
   inputStream.on('data', text => {
     inputText += text;
   });
-  inputStream.on('error', error => {
-    onFinish(generateErrorMsg(error)+'\n', '');
-  });
-  inputStream.on('end', () => {
-    onFinish('', sortTextLines(inputText)+'\n');
-  });
+  inputStream.on('error', error => onFinish(generateErrorMsg(error)+'\n', ''));
+  inputStream.on('end', () => onFinish('', sortTextLines(inputText)+'\n'));
 };
 
 const getInputStream = function(userArgs, streams) {

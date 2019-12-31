@@ -32,6 +32,8 @@ describe('#getInputStream', function() {
   });
 });
 
+/* eslint-disable no-magic-numbers */
+
 describe('#performSort', function() {
   it('should give error if the fileStream doesn\'t exist', function() {
     const inputStream = {on: sinon.fake()};
@@ -40,7 +42,7 @@ describe('#performSort', function() {
     assert.strictEqual(inputStream.on.firstCall.args[0], 'data');
     assert.strictEqual(inputStream.on.secondCall.args[0], 'error');
     assert.strictEqual(inputStream.on.thirdCall.args[0], 'end');
-    assert.strictEqual(inputStream.on.callCount, 3);
+    assert(inputStream.on.calledThrice);
     inputStream.on.secondCall.args[1]({code: 'ENOENT'});
     const errorMsg = 'sort: No such file or directory\n';
     assert(onFinish.calledOnceWith(errorMsg, ''));
@@ -72,3 +74,5 @@ describe('#performSort', function() {
     assert(onFinish.calledOnceWith(errorMsg, '' ));
   });
 });
+
+/* eslint-enable no-magic-numbers */
