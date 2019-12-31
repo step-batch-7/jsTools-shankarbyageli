@@ -2,10 +2,10 @@ const fs = require('fs');
 const { performSort, getInputStream } = require('./src/sortLib');
 
 const main = function() {
-  const printSortResult = function(sortResult) {
-    process.stdout.write(sortResult.sortedLines);
-    process.stderr.write(sortResult.error);
-    if (sortResult.error) {
+  const printSortResult = function(error, sortedLines) {
+    process.stdout.write(sortedLines);
+    process.stderr.write(error);
+    if (error) {
       process.exitCode = 2;
     }
   };

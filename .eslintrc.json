@@ -39,6 +39,7 @@
         "arrow-spacing": "error",
         "no-var":"error",
         "curly": "error",
+        "brace-style": "error",
         "eol-last": "warn",
         "eqeqeq": "warn",
         "getter-return": "error",
@@ -76,6 +77,7 @@
         "no-loop-func":"error",
         "no-proto":"error",
         "prefer-spread":"warn",
-        "no-useless-call":"error"
+        "no-useless-call":"error",
+        "no-param-reassign" : "error"
     }
 }

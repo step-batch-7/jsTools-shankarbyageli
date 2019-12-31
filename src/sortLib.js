@@ -1,13 +1,15 @@
-const {sortTextLines, getPrintableResult} = require('./sortUtils.js');
+const {sortTextLines} = require('./sortUtils.js');
 
 const performSort = function(inputStream, onFinish) {
   let inputText = '';
-  inputStream.on('data', text => {inputText += text;});
+  inputStream.on('data', text => {
+    inputText += text;
+  });
   inputStream.on('error', error => {
-    onFinish(generateErrorMsg(error, getPrintableResult));
+    onFinish(generateErrorMsg(error)+'\n', '');
   });
   inputStream.on('end', () => {
-    onFinish(sortTextLines(inputText, getPrintableResult));
+    onFinish('', sortTextLines(inputText)+'\n');
   });
 };
 
@@ -20,7 +22,7 @@ const getInputStream = function(userArgs, streams) {
   return streams.inputStream;
 };
 
-const generateErrorMsg = function(error, onCompletion) {
+const generateErrorMsg = function(error) {
   const errorCode = error.code;
   let errorMsg = 'sort: Error reading file';
   const errorsList = {
@@ -31,7 +33,7 @@ const generateErrorMsg = function(error, onCompletion) {
   if (errorsList[errorCode]) {
     errorMsg = errorsList[errorCode];
   }
-  return onCompletion({errorMsg});
+  return errorMsg;
 };
 
 module.exports = {
