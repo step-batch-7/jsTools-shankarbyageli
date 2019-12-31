@@ -1,24 +1,14 @@
+const {sortTextLines, getPrintableResult} = require('./sortUtils.js');
+
 const performSort = function(inputStream, onFinish) {
-  let inputStreamText = '';
-  inputStream.on('data', data => {
-    inputStreamText += data.toString();
-  });
+  let inputText = '';
+  inputStream.on('data', text => {inputText += text;});
   inputStream.on('error', error => {
-    onFinish(getPrintableResult({ error }));
+    onFinish(generateErrorMsg(error, getPrintableResult));
   });
   inputStream.on('end', () => {
-    const sortedLines = sortTextLines(inputStreamText);
-    onFinish(getPrintableResult({ sortedLines }));
+    onFinish(sortTextLines(inputText, getPrintableResult));
   });
-};
-
-const getPrintableResult = function(sortResult) {
-  if (sortResult.error) {
-    const errorMsg = generateErrorMsg(sortResult.error.code);
-    return { error: `${errorMsg}\n`, sortedLines: '' };
-  }
-  const sortedLines = sortResult.sortedLines;
-  return { error: '', sortedLines: `${sortedLines.join('\n')}\n` };
 };
 
 const getInputStream = function(userArgs, streams) {
@@ -30,26 +20,18 @@ const getInputStream = function(userArgs, streams) {
   return streams.inputStream;
 };
 
-const sortTextLines = function(text) {
-  const lastIndex = -1, firstIndex = 0;
-  let textLines = text.split('\n');
-  if (textLines[textLines.length + lastIndex] === '') {
-    textLines = textLines.slice(firstIndex, lastIndex);
-  }
-  const sortedLines = [...textLines].sort();
-  return sortedLines;
-};
-
-const generateErrorMsg = function(errorCode) {
-  const errorMsg = {
+const generateErrorMsg = function(error, onCompletion) {
+  const errorCode = error.code;
+  let errorMsg = 'sort: Error reading file';
+  const errorsList = {
     EISDIR: 'sort: Is a directory',
     ENOENT: 'sort: No such file or directory',
     EACCES: 'sort: Permission denied'
   };
-  if (errorMsg[errorCode]) {
-    return errorMsg[errorCode];
+  if (errorsList[errorCode]) {
+    errorMsg = errorsList[errorCode];
   }
-  return 'sort: Error reading file';
+  return onCompletion({errorMsg});
 };
 
 module.exports = {
