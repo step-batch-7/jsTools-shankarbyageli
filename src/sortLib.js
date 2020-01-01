@@ -1,6 +1,13 @@
 const {sortTextLines} = require('./sortUtils.js');
+const {parseUserArgs} = require('./inputHandling');
 
-const performSort = function(inputStream, onFinish) {
+const performSort = function(userArgs, streams, onFinish) {
+  const sortOptions = parseUserArgs(userArgs.slice(2));
+  if(sortOptions.error) {
+    onFinish(generateErrorMsg(sortOptions.error)+'\n', '');
+    return;
+  }
+  const inputStream = getInputStream(sortOptions.files, streams);
   let inputText = '';
   inputStream.on('data', text => {
     inputText += text;
@@ -9,11 +16,10 @@ const performSort = function(inputStream, onFinish) {
   inputStream.on('end', () => onFinish('', sortTextLines(inputText)+'\n'));
 };
 
-const getInputStream = function(userArgs, streams) {
-  const firstFileIndex = 0, userArgsIndex = 2;
-  const files = userArgs.slice(userArgsIndex);
+const getInputStream = function(files, streams) {
+  const [fileName] = files;
   if (files.length) {
-    return streams.createReadStream(files[firstFileIndex]);
+    return streams.createReadStream(fileName);
   }
   return streams.inputStream;
 };
@@ -24,7 +30,8 @@ const generateErrorMsg = function(error) {
   const errorsList = {
     EISDIR: 'sort: Is a directory',
     ENOENT: 'sort: No such file or directory',
-    EACCES: 'sort: Permission denied'
+    EACCES: 'sort: Permission denied',
+    INVDOP: `sort: invalid option -- ${error.option}`
   };
   if (errorsList[errorCode]) {
     errorMsg = errorsList[errorCode];

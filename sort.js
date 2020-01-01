@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { performSort, getInputStream } = require('./src/sortLib');
+const { performSort } = require('./src/sortLib');
 
 const main = function() {
   const printSortResult = function(error, sortedLines) {
@@ -13,8 +13,7 @@ const main = function() {
     createReadStream: fs.createReadStream,
     inputStream: process.stdin
   };
-  const inputStream = getInputStream(process.argv, streams);
-  performSort(inputStream, printSortResult);
+  performSort(process.argv, streams, printSortResult);
 };
 
 main();
