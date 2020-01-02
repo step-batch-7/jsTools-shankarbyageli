@@ -8,7 +8,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "nyc mocha; ./runAppTests.sh appTest/*.test",
+    "test": "nyc mocha; ./runAppTests.sh appTest/*.test && npx eslint src test *.js",
     "start": "node sort.js"
   },
   "repository": {

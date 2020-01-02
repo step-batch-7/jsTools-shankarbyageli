@@ -1,0 +1,6 @@
+(node sort.js -n ./appTest/alphanumeric_sample.txt)
+abc
+go
+2
+4
+12

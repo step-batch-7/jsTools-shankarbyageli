@@ -1,56 +1,52 @@
 const assert = require('chai').assert;
 const sinon = require('sinon');
-const { performSort, getInputStream } = require('../src/sortLib');
+const {performSort, getInputStream} = require('../src/sortLib');
 
-describe('#getInputStream', function() {
+describe('#getInputStream', function () {
   it('should give process.stdin as inputStream if no file is specified', () => {
     const fileInputStream = sinon.spy();
     const stdin = sinon.spy();
     const streams = {
-      createReadStream: function() {
-        return fileInputStream;
-      },
-      inputStream: stdin
+      createReadStream: () => fileInputStream,
+      inputStream: () => stdin
     };
     const actual = getInputStream([], streams);
-    assert.strictEqual(actual, streams.inputStream);
+    assert.strictEqual(actual, stdin);
   });
 
-  it('should give file stream as inputStream if file is specified', function() {
+  it('should give file stream as inputStream if file is specified', () => {
     const fileInputStream = sinon.spy();
     const stdin = sinon.spy();
     const streams = {
-      createReadStream: function() {
+      createReadStream: function () {
         return fileInputStream;
       },
-      inputStream: stdin
+      inputStream: () => stdin
     };
     const actual = getInputStream(['one.txt'], streams);
     assert.strictEqual(actual, fileInputStream);
   });
 });
 
-describe('#performSort', function() {
+describe('#performSort', function () {
   let fileInputStream, stdin, streams;
   beforeEach(function () {
     fileInputStream = {on: sinon.spy()};
     stdin = {on: sinon.spy()};
     streams = {
-      createReadStream: function() {
-        return fileInputStream;
-      },
-      inputStream: stdin
+      createReadStream: () => fileInputStream,
+      inputStream: () => stdin
     };
   });
 
-  const assertForEach = function(stream) {
+  const assertForEach = function (stream) {
     assert.strictEqual(stream.on.firstCall.args[0], 'data');
     assert.strictEqual(stream.on.secondCall.args[0], 'error');
     assert.strictEqual(stream.on.thirdCall.args[0], 'end');
     assert(stream.on.calledThrice);
   };
 
-  it('should give error if the fileStream doesn\'t exist', function() {
+  it('should give error if the fileStream doesn\'t exist', function () {
     const onFinish = sinon.fake();
     performSort(['', '', 'badFile.txt'], streams, onFinish);
     assertForEach(fileInputStream);
@@ -59,7 +55,7 @@ describe('#performSort', function() {
     assert(onFinish.calledOnceWith(errorMsg, ''));
   });
 
-  it('should perform sorting on given data through stream', function() {
+  it('should perform sorting on given data through stream', function () {
     const onFinish = sinon.spy();
     performSort(['', ''], streams, onFinish);
     assertForEach(stdin);
@@ -68,7 +64,7 @@ describe('#performSort', function() {
     assert(onFinish.calledOnceWith('', 'a\nb\nc\n'));
   });
 
-  it('should give error if options are invalid', function() {
+  it('should give error if options are invalid', function () {
     const onFinish = sinon.spy();
     performSort(['', '', '-p'], streams, onFinish);
     assert.strictEqual(stdin.on.callCount, 0);
@@ -76,7 +72,7 @@ describe('#performSort', function() {
     assert(onFinish.calledOnceWith(errorMsg, ''));
   });
 
-  it('should give default error if error is not in list', function() {
+  it('should give default error if error is not in list', function () {
     const onFinish = sinon.fake();
     performSort(['', '', 'file'], streams, onFinish);
     assertForEach(fileInputStream);
