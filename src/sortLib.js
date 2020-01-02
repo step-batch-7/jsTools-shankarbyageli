@@ -8,12 +8,24 @@ const performSort = function(userArgs, streams, onFinish) {
     return;
   }
   const inputStream = getInputStream(sortOptions.files, streams);
+  loadStreamContents(inputStream, (error, text) => {
+    if(error) {
+      const errorMsg = generateErrorMsg(error);
+      onFinish(errorMsg+'\n', '');
+      return;
+    }
+    const sortedText = sortTextLines(text);
+    onFinish('', sortedText+'\n');
+  });
+};
+
+const loadStreamContents = function(inputStream, onLoad) {
   let inputText = '';
   inputStream.on('data', text => {
     inputText += text;
   });
-  inputStream.on('error', error => onFinish(generateErrorMsg(error)+'\n', ''));
-  inputStream.on('end', () => onFinish('', sortTextLines(inputText)+'\n'));
+  inputStream.on('error', error => onLoad(error, ''));
+  inputStream.on('end', () => onLoad('', inputText));
 };
 
 const getInputStream = function(files, streams) {
