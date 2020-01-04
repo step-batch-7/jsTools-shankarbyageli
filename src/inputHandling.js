@@ -1,21 +1,19 @@
 const parseUserArgs = function (userArgs) {
   const sortOptions = {options: [], files: []};
-  const firstCharIndex = 0;
-
   userArgs.forEach(arg => {
-    if (arg[firstCharIndex] === '-') {
+    if (arg[0] === '-') {
       sortOptions.options.push(arg);
       return;
     }
     sortOptions.files.push(arg);
   });
 
-  const invalidOption = sortOptions.options.find(option => {
+  let invalidOption = sortOptions.options.find(option => {
     return option !== '-n';
   });
   if (invalidOption) {
-    const index = 1;
-    sortOptions.error = {code: 'INVDOP', option: invalidOption.slice(index)};
+    [, invalidOption] = invalidOption.match(/^-(.*)/);
+    sortOptions.error = {code: 'INVDOP', option: invalidOption};
   }
   return sortOptions;
 };

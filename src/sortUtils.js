@@ -1,8 +1,7 @@
 const sortTextLines = function (inputText, options) {
-  const lastIndex = -1, firstIndex = 0;
   let textLines = inputText.split('\n');
-  if (textLines[textLines.length + lastIndex] === '') {
-    textLines = textLines.slice(firstIndex, lastIndex);
+  if (textLines[textLines.length - 1] === '') {
+    textLines = textLines.slice(0, -1);
   }
   let sortedLines = [...textLines].sort();
   if (options.includes('-n')) {
@@ -12,17 +11,18 @@ const sortTextLines = function (inputText, options) {
 };
 
 const numericSort = function (text) {
-  const numerics = [], nonNumbers = [];
-  text.forEach(line => {
-    const isParsableToInt = Number.isInteger(parseInt(line));
-    const selectedList = isParsableToInt ? numerics : nonNumbers;
-    selectedList.push(line);
+  const sortedLines = text.sort((textA, textB) => {
+    const intParsedA = parseInt(textA);
+    const intParsedB = parseInt(textB);
+    if (Number.isInteger(intParsedA) && Number.isInteger(intParsedB)) {
+      return intParsedA - intParsedB;
+    }
+    if (Number.isInteger(intParsedB)) {
+      return -1;
+    }
+    return textA.localeCompare(textB);
   });
-  const sortedNonNumber = nonNumbers.sort();
-  const sortedNumbers = numerics.sort((textA, textB) => {
-    return parseInt(textA) - parseInt(textB);
-  });
-  return sortedNonNumber.concat(sortedNumbers);
+  return sortedLines;
 };
 
 module.exports = {sortTextLines}; 
