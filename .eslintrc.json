@@ -94,7 +94,6 @@
       }
     ],
     "no-multi-spaces": "error",
-    "object-curly-spacing": "error",
     "semi-spacing": "error",
     "no-multiple-empty-lines": [
       "error",

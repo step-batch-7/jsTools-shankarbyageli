@@ -1,6 +1,6 @@
 const assert = require('chai').assert;
 const sinon = require('sinon');
-const {performSort, getInputStream} = require('../src/sortLib');
+const { performSort, getInputStream } = require('../src/sortLib');
 
 describe('#getInputStream', function () {
   it('should give process.stdin as inputStream if no file is specified', () => {
@@ -31,8 +31,8 @@ describe('#getInputStream', function () {
 describe('#performSort', function () {
   let fileInputStream, stdin, streams;
   beforeEach(function () {
-    fileInputStream = {on: sinon.spy()};
-    stdin = {on: sinon.spy()};
+    fileInputStream = { on: sinon.spy() };
+    stdin = { on: sinon.spy() };
     streams = {
       createReadStream: () => fileInputStream,
       inputStream: () => stdin
@@ -50,7 +50,7 @@ describe('#performSort', function () {
     const onFinish = sinon.fake();
     performSort(['', '', 'badFile.txt'], streams, onFinish);
     assertForEach(fileInputStream);
-    fileInputStream.on.secondCall.args[1]({code: 'ENOENT'});
+    fileInputStream.on.secondCall.args[1]({ code: 'ENOENT' });
     const errorMsg = 'sort: No such file or directory\n';
     assert(onFinish.calledOnceWith(errorMsg, ''));
   });
@@ -76,7 +76,7 @@ describe('#performSort', function () {
     const onFinish = sinon.fake();
     performSort(['', '', 'file'], streams, onFinish);
     assertForEach(fileInputStream);
-    fileInputStream.on.secondCall.args[1]({code: 'UNKNOWN'});
+    fileInputStream.on.secondCall.args[1]({ code: 'UNKNOWN' });
     const errorMsg = 'sort: Error reading file\n';
     assert(onFinish.calledWith(errorMsg, ''));
   });

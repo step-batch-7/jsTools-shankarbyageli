@@ -1,14 +1,26 @@
-const sortTextLines = function (inputText, options) {
-  let textLines = inputText.split('\n');
-  if (textLines[textLines.length - 1] === '') {
-    textLines = textLines.slice(0, -1);
+class Sort {
+  constructor(options) {
+    this.options = options;
   }
-  let sortedLines = [...textLines].sort();
-  if (options.includes('-n')) {
-    sortedLines = numericSort(sortedLines);
+  hasError() {
+    if (this.options.invalidOption) {
+      const invalidOption = this.options.invalidOption.match(/^-(.*)/)[1];
+      this.error = { code: 'INVDOP', option: invalidOption };
+      return true;
+    }
   }
-  return sortedLines.join('\n');
-};
+  perform(text) {
+    let textLines = text.split('\n');
+    if (textLines[textLines.length - 1] === '') {
+      textLines = textLines.slice(0, -1);
+    }
+    let sortedLines = [...textLines].sort();
+    if (this.options.numericSort) {
+      sortedLines = numericSort(sortedLines);
+    }
+    return sortedLines.join('\n');
+  }
+}
 
 const numericSort = function (text) {
   const sortedLines = text.sort((textA, textB) => {
@@ -25,4 +37,4 @@ const numericSort = function (text) {
   return sortedLines;
 };
 
-module.exports = {sortTextLines}; 
+module.exports = Sort; 

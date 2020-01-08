@@ -1,11 +1,15 @@
-const {sortTextLines} = require('./sortUtils.js');
-const {parseUserArgs} = require('./inputHandling');
+const Sort = require('./sortUtils.js');
+const { parseUserArgs } = require('./inputHandling');
 
 const performSort = function (userInput, streamCreators, onFinish) {
   const [, , ...userArgs] = userInput;
-  const sortOptions = parseUserArgs(userArgs);
-  if (sortOptions.error) {
-    onFinish(generateErrorMsg(sortOptions.error) + '\n', '');
+  const optionsLookup = {
+    '-n': 'numericSort'
+  };
+  const sortOptions = parseUserArgs(userArgs, optionsLookup);
+  const sort = new Sort(sortOptions.options);
+  if (sort.hasError()) {
+    onFinish(generateErrorMsg(sort.error) + '\n', '');
     return;
   }
   const inputStream = getInputStream(sortOptions.files, streamCreators);
@@ -15,7 +19,7 @@ const performSort = function (userInput, streamCreators, onFinish) {
       onFinish(errorMsg + '\n', '');
       return;
     }
-    const sortedText = sortTextLines(text, sortOptions.options);
+    const sortedText = sort.perform(text);
     onFinish('', sortedText + '\n');
   });
 };

@@ -1,5 +1,5 @@
 const fs = require('fs');
-const {performSort} = require('./src/sortLib');
+const { performSort } = require('./src/sortLib');
 
 const main = function () {
   const printSortResult = function (error, sortedLines) {
